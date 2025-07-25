@@ -61,9 +61,6 @@ public class GenerateBill extends JFrame {
     JTextField discountPercentage = null;
     int primaryKey ;
 
-
-    int sl = 0;
-
          Font font = new Font("SansSerif", Font.BOLD, 15);
 
     public GenerateBill(){
@@ -607,7 +604,7 @@ public class GenerateBill extends JFrame {
 
     public void showButtonDemo() {
         try{
-            pst = con.mkDataBase().prepareStatement("select distinct a.item_name from item a join category b on b.id = a.cat_id");
+            pst = con.mkDataBase().prepareStatement("select distinct a.item_name from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
             rs = pst.executeQuery();
             while(rs.next()){
                 data[itemCount] = rs.getString("item_name");
@@ -620,7 +617,7 @@ public class GenerateBill extends JFrame {
     }
 
     public Double getPrice(String food,String size){
-        String sql = "select price from item where item_name='"+food+"' and lower(quantity) like lower('%"+size+"%')";
+        String sql = "select price from item where deleted = false and item_name='"+food+"' and lower(quantity) like lower('%"+size+"%')";
         try{
             pst = con.mkDataBase().prepareStatement(sql);
             rs = pst.executeQuery();
@@ -664,7 +661,7 @@ public class GenerateBill extends JFrame {
 
     public void getCategory() {
         try{
-            pst = con.mkDataBase().prepareStatement("select * from category");
+            pst = con.mkDataBase().prepareStatement("select * from category where deleted = false");
             rs = pst.executeQuery();
             while(rs.next()){
                 data2[itemCount2] = rs.getString("name");
@@ -682,7 +679,7 @@ public class GenerateBill extends JFrame {
         ResultSet rs;
         DBConnection con = new DBConnection();
         String sql =  "select b.name,a.item_name,a.price,a.quantity from item a " +
-                "                    inner join category b on b.id = a.cat_id Where lower(b.name) like lower('%"+cats+"%') and lower(a.item_name) like lower('%"+txt+"%') order by a.item_name";
+                "                    inner join category b on b.id = a.cat_id Where a.deleted = false and b.deleted = false and lower(b.name) like lower('%"+cats+"%') and lower(a.item_name) like lower('%"+txt+"%') order by a.item_name";
         try{
             pst = con.mkDataBase().prepareStatement(sql);
 

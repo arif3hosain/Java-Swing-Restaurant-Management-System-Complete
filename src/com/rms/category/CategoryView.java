@@ -139,7 +139,7 @@ public class CategoryView {
         ResultSet rs;
         DBConnection con = new DBConnection();
         try{
-            pst = con.mkDataBase().prepareStatement("select * from category order by name");
+            pst = con.mkDataBase().prepareStatement("select * from category where deleted = false order by name");
             rs = pst.executeQuery();
             int i=1;
             while(rs.next()){
@@ -169,7 +169,7 @@ public class CategoryView {
         PreparedStatement pst;
         DBConnection con = new DBConnection();
         try{
-            pst = con.mkDataBase().prepareStatement("delete from category where id = ?");
+            pst = con.mkDataBase().prepareStatement("update category set deleted = true where id = ?");
             pst.setLong(1, id);
             pst.execute();
             showButtonDemo();

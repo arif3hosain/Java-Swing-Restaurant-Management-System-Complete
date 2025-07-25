@@ -148,7 +148,7 @@ public class ItemView {
             DBConnection con = new DBConnection();
             try{
                 pst = con.mkDataBase().prepareStatement("select b.name,a.id,a.item_name,a.description,a.quantity,a.price,a.discount,a.vat,a.available from item a " +
-                        "inner join category b on b.id = a.cat_id order by b.name,a.item_name, a.quantity");
+                        "inner join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false order by b.name,a.item_name, a.quantity");
                 rs = pst.executeQuery();
                 int i=1;
                 while(rs.next()){
@@ -190,7 +190,7 @@ public class ItemView {
        PreparedStatement pst;
        DBConnection con = new DBConnection();
        try{
-           pst = con.mkDataBase().prepareStatement("delete from item where id = ?");
+           pst = con.mkDataBase().prepareStatement("update item set deleted = true where id  = ?");
            pst.setLong(1, id);
                pst.execute();
            showButtonDemo();
