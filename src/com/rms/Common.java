@@ -30,7 +30,7 @@ public class Common {
 
     //        public static String resourcePath = "/Users/arifhosain/ccl_resources";
 //    public static String resourcePath = "/home/arifhosain/ccl_resources";
-    public static String resourcePath = "/home/tomcat/ccl_resources";
+    public static String resourcePath = "/home/ahosain/Documents/personal/app/resources";
 //    public static String resourcePath = "D:/ccl_resources";
 
 
@@ -843,12 +843,6 @@ public class Common {
 
 
     public static String getFullName(String code) {
-        if (code.equalsIgnoreCase("efl")) return "Expo Freight Limited";
-        if (code.equalsIgnoreCase("cfl")) return "Cross Freight Limited";
-        if (code.equalsIgnoreCase("aps")) return "APS Logistics International Limited";
-        if (code.equalsIgnoreCase("wac")) return "WAC Logistics Limited";
-        if (code.equalsIgnoreCase("bil")) return "BIL Logistics International Limited";
-        if (code.equalsIgnoreCase("fol")) return "Freight Options Limited";
         if (code.equalsIgnoreCase("ull")) return "UniWorld Logistics Limited";
         return "";
     }

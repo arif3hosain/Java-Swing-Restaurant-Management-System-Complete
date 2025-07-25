@@ -50,10 +50,10 @@ public class Setting {
             }
         });
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(null, "Logo not found!");
+            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
         headerLabel = new JLabel("Store system data!", JLabel.CENTER);
         headerLabel.setBounds(50,10,300,50);

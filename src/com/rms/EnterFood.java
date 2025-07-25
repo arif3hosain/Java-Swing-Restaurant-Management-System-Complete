@@ -1,4 +1,5 @@
 package com.rms;
+import com.rms.setting.Utils;
 import db.DBConnection;
 
 import java.awt.*;
@@ -33,10 +34,10 @@ public class EnterFood {
 	  mainFrame.getContentPane().setBackground(Color.gray);
 
        try{
-           mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+           mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
        }
        catch (Exception ex){
-           JOptionPane.showMessageDialog(null, "Logo not found!");
+           JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
        }
 
       mainFrame.addWindowListener(new WindowAdapter() {

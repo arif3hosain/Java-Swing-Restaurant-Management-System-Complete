@@ -1,6 +1,7 @@
 package com.rms.item;
 
 import com.rms.Frame2new;
+import com.rms.setting.Utils;
 import db.DBConnection;
 
 import javax.imageio.ImageIO;
@@ -45,10 +46,10 @@ public class UpdateItem {
             }
         });
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(null, "Logo not found!");
+            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
         headerLabel = new JLabel("Update Food Item!", JLabel.CENTER);
         headerLabel.setBounds(30,10,300,50);
@@ -92,7 +93,7 @@ public class UpdateItem {
         tf1.setBounds(120,90,270,38);
         tf1.setFont(font);
 
-        Object[] size = new Object[]{"-1","Full","Half","Small","Large"};
+        Object[] size = new Object[]{"","1","Full","Half","Small","Large"};
         quantity = new JLabel("Food Size Type");
         quantity.setBounds(10,130,100,30);
         JComboBox types = new JComboBox(size);

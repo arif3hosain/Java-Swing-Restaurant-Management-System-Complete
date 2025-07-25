@@ -30,14 +30,16 @@ public class Frame1 {
 		mainFrame.setLayout(null);
 		mainFrame.getContentPane().setBackground(Color.pink);
 		try{
+			System.out.print(Utils.logoPath);
 			mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+			
 		}
 		catch (Exception ex){
-			JOptionPane.showMessageDialog(null, "Logo not found!");
+			JOptionPane.showMessageDialog(null,Utils.LOGO_NOT_FOUND);
 		}
 		//====
 		headerLabel = new JLabel();
-		headerLabel.setText("Pizza Captaion Secured Login");
+		headerLabel.setText(Utils.TITLE);
 		headerLabel.setBounds(150,1,500,100);
 		headerLabel.setFont(new Font("Geomanist", Font.BOLD, 25));
 		headerLabel.setForeground(Color.white);
@@ -58,18 +60,18 @@ public class Frame1 {
 		mainFrame.add(passLabel);
 
 		devInfo = new JLabel();
-		devInfo.setText("© all Rights Reserved, developed by www.officesolution.com");
+		devInfo.setText("© all Rights Reserved, developed by Arif Hosain");
 		devInfo.setBounds(160,300,1000,30);
 		devInfo.setFont(new Font("Geomanist", Font.PLAIN, 10));
 		devInfo.setForeground(Color.white);
 		mainFrame.add(devInfo);
 
-		id=new JTextField();
+		id=new JTextField("rms");
 		id.setBounds(300,125,200,30);
 		//id.setText("palki");
 		mainFrame.add(id);
 
-		pass=new JPasswordField();
+		pass=new JPasswordField("123456");
 		//pass.setText("palki011998");
 		mainFrame.add(pass);
 		pass.setBounds(300,175,200,30);
@@ -91,6 +93,8 @@ public class Frame1 {
 		}
 	}
 	public static void main(String[] a) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		
+//		System.out.println("hi");
 		try {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {

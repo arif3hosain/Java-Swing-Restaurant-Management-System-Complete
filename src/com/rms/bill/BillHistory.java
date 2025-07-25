@@ -46,10 +46,10 @@ public class BillHistory extends JFrame{
         mainFrame.setLayout(null);
         mainFrame.setVisible(true);
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(null, "Logo not found!");
+            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
 
         JPanel top = new JPanel(null);

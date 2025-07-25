@@ -11,6 +11,7 @@
       <root url="jar://$PROJECT_DIR$/commons-logging-1.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/commons-collections4-4.4.jar!/" />
       <root url="jar://$PROJECT_DIR$/itext-2.1.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/postgresql-42.7.4.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

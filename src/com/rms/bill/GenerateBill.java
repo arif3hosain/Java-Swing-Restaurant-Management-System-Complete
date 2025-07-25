@@ -76,10 +76,10 @@ public class GenerateBill extends JFrame {
         mainFrame.setBackground(Color.lightGray);
         mainFrame.setVisible(true);
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(null, "Logo not found!");
+            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
         showButtonDemo();
         Object[] items = new Object[itemCount+1];
@@ -123,7 +123,7 @@ public class GenerateBill extends JFrame {
 
 
         lblPrice = new JLabel("Unit Price");
-        lblPrice.setBounds(40,140,100,30);
+        lblPrice.setBounds(40,140,150,30);
         lblPrice.setFont(font);
         center.add(lblPrice);
 
@@ -142,7 +142,7 @@ public class GenerateBill extends JFrame {
         comboItem.setBounds(160,60,200,30);
         comboItem.setFont(font);
         center.add(comboItem);
-        Object[] size = new Object[]{"-1","Full","Half","Small","Large"};
+        Object[] size = new Object[]{"1","Full","Half","Small","Large"};
         comboSize = new JComboBox(size);
         comboSize.setBounds(160,100,200,30);
         comboSize.setFont(font);
@@ -387,7 +387,7 @@ public class GenerateBill extends JFrame {
                String line = "";
                String text = "";
 
-               line = "Palki Chinese Restaurant";
+               line = Utils.TITLE;
                String format = String.format("%-" + (47 - line.length()) / 2 + "s", text);
                fullText += format + line + format+"\n";
                line = "Hazirhat North Bazar";

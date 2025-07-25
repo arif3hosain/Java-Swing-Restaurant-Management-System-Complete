@@ -1,6 +1,7 @@
 package com.rms.item;
 
 import com.rms.Frame2new;
+import com.rms.setting.Utils;
 import db.DBConnection;
 import static com.rms.setting.Utils.*;
 
@@ -44,10 +45,10 @@ public class ItemView {
          }
       });
        try{
-           mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+           mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
        }
        catch (Exception ex){
-           JOptionPane.showMessageDialog(null, "Logo not found!");
+           JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
        }
 
 

@@ -26,7 +26,10 @@ public class Utils {
 //    public static String resourcePath = "/home/arifhosain/ccl_resources";
 //    public static String resourcePath = "/home/tomcat/ccl_resources";
 //    public static String resourcePath = "D:/ccl_resources";
-    public static String logoPath = "D:/pizzacaptain/logo.jpeg";
+    public static String logoPath = "/home/ahosain/Documents/personal/RMS/images/logo.png";
+    public static String LOGO_NOT_FOUND = "Logo doesn't found.";
+    public static String TITLE = "BANGLA BHOJ & BBQ";
+    public static String ICON_PATH = "/home/ahosain/Documents/personal/RMS/images/icon.png";
 
 
     public static boolean isEmpty(String str) {

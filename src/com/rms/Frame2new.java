@@ -5,6 +5,7 @@ import com.rms.category.CategoryView;
 import com.rms.item.ItemView;
 import com.rms.setting.Diff;
 import com.rms.setting.Setting;
+import com.rms.setting.Utils;
 import db.DBConnection;
 
 import java.awt.*;
@@ -36,7 +37,6 @@ public class Frame2new {
     public static String reportPath;
     public static String vat;
     public static String discount;
-    public static String logo = "D:/pizzacaptain/logo.jpeg";
     public static Integer fromID;
     public static Integer storedDays;
     public static Integer days;
@@ -72,10 +72,11 @@ public class Frame2new {
       mainFrame.add(statusLabel);
 
        try{
-           mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+           System.out.println(Utils.logoPath);
+           mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
        }
        catch (Exception ex){
-           JOptionPane.showMessageDialog(null, "Logo not found!");
+           JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
        }
 
        if(days >= exitLimit){
@@ -90,7 +91,7 @@ public class Frame2new {
 
 
    public void showButtonDemo(){
-		headerLabel.setText("Palki Chinese Restaurant");
+		headerLabel.setText(Utils.TITLE);
 		this.headerLabel.setFont(new Font(null, Font.BOLD, 27));
 		headerLabel.setForeground(Color.white);
 
@@ -151,7 +152,7 @@ public class Frame2new {
                 reportPath = rs.getString("report_path");
                 vat = rs.getString("vat");
                 discount = rs.getString("discount");
-                logo = rs.getString("logo");
+               // String logo = rs.getString("logo");
                 stored_days = rs.getString("duration_count");
                 from_id = rs.getString("subscription_from");
             }

@@ -1,6 +1,7 @@
 package com.rms.category;
 
 import com.rms.Frame2new;
+import com.rms.setting.Utils;
 import db.DBConnection;
 
 import javax.imageio.ImageIO;
@@ -42,10 +43,10 @@ public class CategoryView {
         });
 
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Frame2new.logo)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
         }
         catch (Exception ex){
-            JOptionPane.showMessageDialog(null, "Logo not found!");
+            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
         top.setBackground(Color.orange);
         top.setBounds(0,0,1100,100);
