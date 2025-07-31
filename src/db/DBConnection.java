@@ -1,5 +1,6 @@
 package db;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -11,11 +12,12 @@ public class DBConnection {
     public Connection mkDataBase() {
         Connection c = null;
         try {
-            Class.forName("org.postgresql.Driver"); // ✅ FIXED
+            Class.forName("org.postgresql.Driver");
             c = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Database connection failed");
+//            e.printStackTrace();
+//            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         return c;

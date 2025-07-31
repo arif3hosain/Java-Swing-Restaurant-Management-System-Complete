@@ -1,6 +1,7 @@
 package com.rms.item;
 
 import com.rms.Frame2new;
+import com.rms.service.AppService;
 import com.rms.setting.Utils;
 import db.DBConnection;
 
@@ -29,6 +30,7 @@ public class UpdateItem {
     DBConnection con = new DBConnection();
     JPanel bottomPanel = new JPanel(null);
     Font font = new Font("SansSerif", Font.BOLD, 15);
+    AppService appService = new AppService();
 
     UpdateItem(){
         prepareGUI();
@@ -93,13 +95,14 @@ public class UpdateItem {
         tf1.setBounds(120,90,270,38);
         tf1.setFont(font);
 
-        Object[] size = new Object[]{"","1","Full","Half","Small","Large"};
+        String[] size = appService.getFoodTypes();
         quantity = new JLabel("Food Size Type");
         quantity.setBounds(10,130,100,30);
         JComboBox types = new JComboBox(size);
         types.setBounds(120,130,270,40);
         types.setFont(font);
         types.setSelectedItem(qty);
+
 
         price = new JLabel("Price");
         price.setBounds(10,170,100,30);

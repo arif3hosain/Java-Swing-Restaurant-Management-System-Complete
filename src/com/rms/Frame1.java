@@ -76,7 +76,7 @@ public class Frame1 {
 		mainFrame.add(pass);
 		pass.setBounds(300,175,200,30);
 		submit=new JButton("Login");
-		submit.setBounds(400,230,100,25);
+		submit.setBounds(400,230,100,40);
 		mainFrame.add(submit);
 
 		submit.addActionListener(this::submitActionPerformed);

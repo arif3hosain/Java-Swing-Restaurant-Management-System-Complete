@@ -40,13 +40,13 @@ public class Diff {
         return Base64.getEncoder().encodeToString(cipherText);
     }
 
-    public static void main(String[] args) {
-       try{
-           String encryptedText = "0";
-           System.out.println(encrypt(encryptedText));
-       }
-       catch(Exception e){
-           e.printStackTrace();
-       }
-    }
+//    public static void main(String[] args) {
+//       try{
+//           String encryptedText = "30";
+//           System.out.println(encrypt(encryptedText));
+//       }
+//       catch(Exception e){
+//           e.printStackTrace();
+//       }
+//    }
 }

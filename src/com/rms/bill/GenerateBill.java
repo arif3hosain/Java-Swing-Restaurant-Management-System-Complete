@@ -1,9 +1,12 @@
 package com.rms.bill;
 
 import com.rms.Frame2new;
+import com.rms.service.AppService;
 import com.rms.setting.Utils;
 import db.DBConnection;
+import dto.Item;
 import print.PrinterService;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -16,19 +19,19 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
+import static com.rms.Common.todayDateTime;
 import static com.rms.setting.Utils.getString;
-import static com.rms.setting.Utils.todayDateTime;
 
 public class GenerateBill extends JFrame {
 
     private JFrame mainFrame;
     Object[] data = new Object[5000];
     Object[] data2 = new Object[5000];
+    Map<String,Item> itemName = new HashMap<>();
+    List<Item> itemList = new ArrayList<>();
     JTable tbl = null;
     JTable tbl2 = null;
     DefaultTableModel dtm = null;
@@ -60,16 +63,17 @@ public class GenerateBill extends JFrame {
     JTextField vatPercentage = null;
     JTextField discountPercentage = null;
     int primaryKey ;
+    AppService appService = new AppService();
 
-         Font font = new Font("SansSerif", Font.BOLD, 15);
+    Font font = new Font("SansSerif", Font.BOLD, 15);
 
     public GenerateBill(){
         mainFrame = new JFrame("Bill Generator");
-        mainFrame.setSize(1200,700);
+        mainFrame.setSize(1380,730);
         mainFrame.setLayout(null);
         mainFrame.setVisible(true);
-        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-      //  mainFrame.setUndecorated(true);
+        //  mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //  mainFrame.setUndecorated(true);
         mainFrame.setBackground(Color.lightGray);
         mainFrame.setVisible(true);
         try{
@@ -80,7 +84,7 @@ public class GenerateBill extends JFrame {
         }
         showButtonDemo();
         Object[] items = new Object[itemCount+1];
-        items[0] = "--";
+        items[0] = "";
         for(int i =0; i<(itemCount); i++){
             items[i+1] = data[i];
         }
@@ -95,7 +99,7 @@ public class GenerateBill extends JFrame {
         center.setBounds(600,0,400,700);
 
         JPanel right = new JPanel(null);
-        right.setBounds(1020,0,350,700);
+        right.setBounds(1020,0,400,700);
         right.setBackground(Color.gray);
 
         SpinnerModel value = new SpinnerNumberModel(1, //initial value
@@ -107,11 +111,25 @@ public class GenerateBill extends JFrame {
         addFood = new JButton("Add to Cart");
         txtTotal = new JTextField();
         comboItem=new JComboBox(items);
+        comboItem.setEditable(true);
 
-        lblItem = new JLabel("Food Name");
-        lblItem.setBounds(40,60,100,30);
-        lblItem.setFont(font);
-        center.add(lblItem);
+
+        // Get the editor component (i.e., the text field inside combo box)
+        JTextField editor = (JTextField) comboItem.getEditor().getEditorComponent();
+
+        editor.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    String input = editor.getText();
+                    filterComboBox(input);
+                });
+            }
+        });
+
+//        lblItem = new JLabel("Food Name");
+//        lblItem.setBounds(40,60,100,30);
+//        lblItem.setFont(font);
+//        center.add(lblItem);
 
         sizeType = new JLabel("Size");
         sizeType.setBounds(40,100,100,30);
@@ -136,10 +154,12 @@ public class GenerateBill extends JFrame {
 
 
 
-        comboItem.setBounds(160,60,200,30);
+//        comboItem.setBounds(160,60,200,30);
+        comboItem.setBounds(40,60,330,30);
         comboItem.setFont(font);
+
         center.add(comboItem);
-        Object[] size = new Object[]{"1","Full","Half","Small","Large"};
+        String[] size = appService.getFoodTypes();
         comboSize = new JComboBox(size);
         comboSize.setBounds(160,100,200,30);
         comboSize.setFont(font);
@@ -153,6 +173,7 @@ public class GenerateBill extends JFrame {
         quantity.setFont(font);
         center.add(quantity);
         txtTotal.setBounds(160,220,200,30);
+        txtTotal.setEditable(false);
         txtTotal.setFont(font);
         center.add(txtTotal);
         addFood.setBounds(160,270,200,30);
@@ -205,7 +226,7 @@ public class GenerateBill extends JFrame {
 
                     @Override
                     public void keyTyped(KeyEvent e) {
-                      //  System.out.println("keyTyped");
+                        //  System.out.println("keyTyped");
                     }
 
                     public void keyPressed(KeyEvent e){
@@ -218,7 +239,7 @@ public class GenerateBill extends JFrame {
 
                     @Override
                     public void keyReleased(KeyEvent e) {
-                       double discountAmt = Utils.getDoubleVal(discountPercentage.getText());
+                        double discountAmt = Utils.getDoubleVal(discountPercentage.getText());
                         amtCalculator();
                         System.out.println("------------------");
                     }
@@ -284,8 +305,8 @@ public class GenerateBill extends JFrame {
         search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                String comboItem = Utils.getString(catCombo.getSelectedItem());
-                String searchText = Utils.getString(search.getText());
+                String comboItem = getString(catCombo.getSelectedItem());
+                String searchText = getString(search.getText());
                 loadItems(comboItem,searchText);
             }
         });
@@ -324,7 +345,7 @@ public class GenerateBill extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 foodCart f = new foodCart();
                 try {
-                    if (!comboItem.getSelectedItem().equals("--") && quantity.getValue() != null && txtPrice.getText() != null) {
+                    if (!comboItem.getSelectedItem().equals("") && quantity.getValue() != null && txtPrice.getText() != null) {
                         f.name = comboItem.getSelectedItem().toString();
                         f.size = comboSize.getSelectedItem().toString();
                         f.quantity = Integer.parseInt(quantity.getValue().toString());
@@ -339,7 +360,7 @@ public class GenerateBill extends JFrame {
                     JOptionPane.showMessageDialog(null, "Fill up all the fields !" );
                 }
             }
-    });
+        });
 
         btnClear.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -357,7 +378,7 @@ public class GenerateBill extends JFrame {
                     foodCartList = new ArrayList<>();
                 }
             }
-         });
+        });
 
         btnClear.setBounds(10,600,100,35);
         btnClear.setFont(font);
@@ -377,8 +398,8 @@ public class GenerateBill extends JFrame {
         center.add(print);
 
         print.addActionListener(new ActionListener() {
-           public void actionPerformed(ActionEvent e) {
-               String fullText = "";
+            public void actionPerformed(ActionEvent e) {
+              /* String fullText = "";
                orderedFoodList = new ArrayList<>();
                int tableRows = tbl.getRowCount();
                String line = "";
@@ -417,12 +438,12 @@ public class GenerateBill extends JFrame {
                line = "";
                fullText += "\n-----------------------------------------------\n";
                Double discount = getDoubleValue(txtDiscountAmt.getText());
-               line = "Discount("+Utils.getString(discountPercentage.getText())+")"+discount;
-               fullText += "Discount("+Utils.getString(discountPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(discount)+"\n";
+               line = "Discount("+ getString(discountPercentage.getText())+")"+discount;
+               fullText += "Discount("+ getString(discountPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(discount)+"\n";
 
                Double vat = getDoubleValue(txtVATAmt.getText());
-               line = "VAT("+Utils.getString(vatPercentage.getText())+")"+vat;
-               fullText += "VAT("+Utils.getString(vatPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(vat);
+               line = "VAT("+ getString(vatPercentage.getText())+")"+vat;
+               fullText += "VAT("+ getString(vatPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(vat);
 
                fullText += "\n-----------------------------------------------\n";
                Double amount = getDoubleValue(txtAmt.getText());
@@ -437,20 +458,22 @@ public class GenerateBill extends JFrame {
                printerService.printString("58mm Series Printer(1)",fullText);
                byte[] cutP = new byte[] { 0x1d, 'V', 1 };
                printerService.printBytes("58mm Series Printer(1)", cutP);
+*/
+                saveTransaction();
+                JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
+            }
+        });
 
-               saveTransaction();
-               JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
-           }
-       });
 
 
 
         comboItem.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
-                    Object item = event.getItem();
+                if (event.getStateChange() == ItemEvent.SELECTED && itemName.containsKey(comboItem.getSelectedItem())) {
+                    Item item = itemName.get(comboItem.getSelectedItem());
+                    setItemSize(item.name);
                     Object size = comboSize.getSelectedItem();
-                    Double value = getPrice(item.toString(),size.toString());
+                    Double value = getPrice(item.name,size.toString());
                     if(value > 0){
                         txtPrice.setText(String.valueOf(value));
                         Double totalPrice = (value * Integer.parseInt(quantity.getValue().toString()));
@@ -500,18 +523,16 @@ public class GenerateBill extends JFrame {
                             fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i, 3).toString());
                             fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i, 4).toString());
                             fc.price = Double.parseDouble(tbl.getModel().getValueAt(i, 5).toString());
-                            System.out.println(tbl.getModel().getValueAt(i, 2).toString()+"--------------------");
-                            System.out.println(fc.name+"--"+fc.quantity+"-"+fc.unitPrice+"-"+fc.price);
                             foodCartList.add(fc);
                         }
                         amtCalculator();
                     }else{
                         JOptionPane.showMessageDialog(null, "Select an item from table !" );
                     }
-            }else{
+                }else{
                     JOptionPane.showMessageDialog(null, "Add food item to cart !" );
                 }
-        }
+            }
         });
 
         quantity.addChangeListener(new ChangeListener() {
@@ -540,8 +561,8 @@ public class GenerateBill extends JFrame {
         catCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (event.getStateChange() == ItemEvent.SELECTED) {
-                    String comboItem = Utils.getString(catCombo.getSelectedItem());
-                    String searchText = Utils.getString(search.getText());
+                    String comboItem = getString(catCombo.getSelectedItem());
+                    String searchText = getString(search.getText());
                     loadItems(comboItem,searchText);
                 }
             }
@@ -550,17 +571,20 @@ public class GenerateBill extends JFrame {
 
 
     public void addSelectedItem(){
-       try{
-           int row = tbl2.getSelectedRow();
-           Object food = tbl2.getModel().getValueAt(row, 0);
-           Object size = tbl2.getModel().getValueAt(row, 1);
-           comboItem.setSelectedItem(food);
-           comboSize.setSelectedItem(size);
+        try{
+            int row = tbl2.getSelectedRow();
+            Object food = tbl2.getModel().getValueAt(row, 0);
+            Object size = tbl2.getModel().getValueAt(row, 1);
+            Object price = tbl2.getModel().getValueAt(row, 2);
+            comboItem.setSelectedItem(food);
+            comboSize.setSelectedItem(size);
+            txtPrice.setText(price.toString());
+            txtTotal.setText(price.toString());
 
 
-       }catch (Exception e){
-           JOptionPane.showMessageDialog(null, "Please select an item!" );
-       }
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(null, "Please select an item!" );
+        }
     }
 
     public void refreshTable(foodCart food){
@@ -573,11 +597,11 @@ public class GenerateBill extends JFrame {
                 String.valueOf(food.quantity),
                 String.valueOf(food.unitPrice),
                 String.valueOf(food.price)};
-                 dtm.addRow(data);
-                 comboItem.setSelectedItem("--");
-                 txtPrice.setText("");
-                 quantity.setValue(1);
-                 txtTotal.setText("");
+        dtm.addRow(data);
+        comboItem.setSelectedItem("");
+        txtPrice.setText("");
+        quantity.setValue(1);
+        txtTotal.setText("");
         amtCalculator();
     }
 
@@ -601,23 +625,8 @@ public class GenerateBill extends JFrame {
         int quantity;
         Double price;
     }
-
-    public void showButtonDemo() {
-        try{
-            pst = con.mkDataBase().prepareStatement("select distinct a.item_name from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
-            rs = pst.executeQuery();
-            while(rs.next()){
-                data[itemCount] = rs.getString("item_name");
-                itemCount++;
-            }
-        }catch(Exception e){
-            //e.printStackTrace();
-            //JOptionPane.showMessageDialog(null, "Getting items error !");
-        }
-    }
-
     public Double getPrice(String food,String size){
-        String sql = "select price from item where deleted = false and item_name='"+food+"' and lower(quantity) like lower('%"+size+"%')";
+        String sql = "select price from item where item_name='"+food+"' and lower(quantity) like lower('%"+size+"%')";
         try{
             pst = con.mkDataBase().prepareStatement(sql);
             rs = pst.executeQuery();
@@ -630,6 +639,39 @@ public class GenerateBill extends JFrame {
         return 0.0;
     }
 
+    public void showButtonDemo() {
+        try{
+            pst = con.mkDataBase().prepareStatement("select distinct a.item_name,a.price,a.quantity from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
+            rs = pst.executeQuery();
+            Item item = null;
+            while(rs.next()){
+
+                data[itemCount] = rs.getString("item_name");
+
+                item = new Item();
+                item.name =  rs.getString("item_name");
+                item.price = rs.getDouble("price");
+                item.quantity = rs.getString("quantity");
+                itemName.put(data[itemCount].toString(),item);
+                itemList.add(item);
+                itemCount++;
+            }
+        }catch(Exception e){
+            //e.printStackTrace();
+            //JOptionPane.showMessageDialog(null, "Getting items error !");
+        }
+    }
+
+
+    public void setItemSize(String foodName){
+        comboSize.removeAllItems();
+        ArrayList<String> list = new ArrayList();
+        for(Item itm: itemList){
+            if(itm.name.equalsIgnoreCase(foodName)){
+                comboSize.addItem(itm.quantity);
+            }
+        }
+    }
 
     public double getDoubleValue(String value){
         if(value == null) return 0.0;
@@ -673,6 +715,24 @@ public class GenerateBill extends JFrame {
         }
     }
 
+    private void filterComboBox(String input) {
+
+        comboItem.hidePopup();
+
+        comboItem.removeAllItems();
+        comboItem.addItem(input); // keep what user typed
+
+        for (int i = 0; i < itemCount; i++) {
+            String item = data[i].toString();
+            if (item.toLowerCase().contains(input.toLowerCase())) {
+                comboItem.addItem(item);
+            }
+        }
+
+        comboItem.setSelectedItem(input); // reset editor text
+        comboItem.showPopup(); // show dropdown again
+    }
+
     public void loadItems(String cats,String txt){
         dtm2.setRowCount(0);
         PreparedStatement pst;
@@ -705,7 +765,7 @@ public class GenerateBill extends JFrame {
         try{
             pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount) values (" +
                     " CURRENT_TIMESTAMP,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-       //     pst.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
+            //     pst.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
             pst.setString(1, "");
             pst.setDouble(2, vat);
             pst.setDouble(3, discount);

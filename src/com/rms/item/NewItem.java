@@ -1,6 +1,7 @@
 package com.rms.item;
 
 import com.rms.Frame2new;
+import com.rms.service.AppService;
 import com.rms.setting.Utils;
 import db.DBConnection;
 
@@ -14,6 +15,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NewItem {
 
@@ -29,6 +32,7 @@ public class NewItem {
     DBConnection con = new DBConnection();
     JPanel bottomPanel = new JPanel(null);
     Font font = new Font("SansSerif", Font.BOLD, 15);
+    AppService appService = new AppService();
 
     NewItem(){
         prepareGUI();
@@ -92,10 +96,11 @@ public class NewItem {
         tf1.setBounds(120,90,270,38);
         tf1.setFont(font);
 
-        Object[] size = new Object[]{"","1","Full","Half","Small","Large"};
+        String[] size = appService.getFoodTypes(); // No wrapping in new Object[]!
         quantity = new JLabel("Food Size Type");
         quantity.setBounds(10,130,100,30);
-        JComboBox types = new JComboBox(size);
+
+        JComboBox<String> types = new JComboBox<>(size); // Generics are optional but recommended
         types.setBounds(120,130,270,40);
         types.setFont(font);
 
@@ -212,6 +217,8 @@ public class NewItem {
             JOptionPane.showMessageDialog(null, "getting category 211!");
         }
     }
+
+
 
 
     public int getCategoryID(String name) {

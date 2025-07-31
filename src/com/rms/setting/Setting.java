@@ -20,10 +20,7 @@ public class Setting {
     private JFrame mainFrame;
     private JLabel headerLabel;
     Object[] data = new Object[500];
-    private JLabel id,name,price,quantity;
-    private static int count = 0;
     Integer itemCount = 0;
-    GridLayout experimentLayout = new GridLayout(0,2);
     ResultSet rs;
     PreparedStatement pst;
     DBConnection con = new DBConnection();
@@ -141,17 +138,17 @@ public class Setting {
         String vat = Utils.getString(txtVAT.getText());
         String discount = Utils.getString(txtDiscount.getText());
             try {
-                System.out.println("---------------1");
-                pst = con.mkDataBase().prepareStatement("update keyvalue set report_path = ?, logo = ?, vat = ?, discount,subscription_from = ?  Where id = 1 ");
+                pst = con.mkDataBase().prepareStatement("update keyvalue set report_path = ?, logo = ?, vat = ?, discount = ?,subscription_from = ?  Where id = 1 ");
                 pst.setString(1, reportPath);
                 pst.setString(2, logoPath);
-                pst.setString(3, vat);
-                pst.setString(4, discount);
+                pst.setDouble(3, vat.trim().length() > 0 ?  Double.parseDouble(vat) : 0);
+                pst.setDouble(4, discount.trim().length() > 0 ?  Double.parseDouble(discount) : 0);
                 pst.setString(5, key.getText());
                 pst.execute();
                 JOptionPane.showMessageDialog(null, "Data has been successfully updated.");
                 mainFrame.setVisible(false);
             } catch (Exception ex) {
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Please input correct data format!");
             }
     }

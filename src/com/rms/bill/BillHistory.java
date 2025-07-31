@@ -152,6 +152,7 @@ public class BillHistory extends JFrame{
         String sql = "";
       if(fromDate != null || toDate != null) {
           sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
+          System.out.println(sql);
       }else{
          sql = "select * from bill order by id desc ";
       }
@@ -163,7 +164,7 @@ public class BillHistory extends JFrame{
                 String[] fields = new String[]{"created_date", "description", "vat_amt", "discount_amt", "total","amount"};
                 List inList = new ArrayList();
                 Map map = new HashMap();
-                map.put("param1","");
+                map.put("logo","/home/ahosain/Documents/personal/RMS/logo.png");
 
                 while (rs.next()) {
                     row ++;
@@ -178,7 +179,7 @@ public class BillHistory extends JFrame{
                 if(row > 0) {
                     JasperPrint jasperPrint = null;
                     InputStream jasperStream = null;
-                    jasperStream = new FileInputStream(new File("D:/app/palki_billing.jasper"));
+                    jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
 //            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
                     jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
                     JasperExportManager.exportReportToPdfFile(jasperPrint, Frame2new.reportPath +"(" + fromDate + ") - (" + toDate + ").PDF");
@@ -192,7 +193,7 @@ public class BillHistory extends JFrame{
                // //e.printStackTrace();
                 //message.setText("Input correct date format - DD/MM/YYYY");
             } catch ( JRException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
                 message.setText("Warning when exporting report");
                 JOptionPane.showMessageDialog(null, "Warning when exporting report");
             }catch ( IOException e) {

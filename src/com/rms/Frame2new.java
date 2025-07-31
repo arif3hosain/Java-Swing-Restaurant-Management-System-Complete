@@ -160,7 +160,7 @@ public class Frame2new {
            fromID = Integer.parseInt(Diff.decrypt(from_id));
         }catch(Exception e){
             //e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Data changes has been found!");
+            //JOptionPane.showMessageDialog(null, "Data changes has been found!");
         }
     }
 
