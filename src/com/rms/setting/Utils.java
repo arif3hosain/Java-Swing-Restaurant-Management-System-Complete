@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -15,6 +16,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
@@ -30,6 +32,8 @@ public class Utils {
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
     public static String TITLE = "BANGLA BHOJ & BBQ";
     public static String ICON_PATH = "/home/ahosain/Documents/personal/RMS/images/icon.png";
+    public static Font FONT_15 = new Font("SansSerif", Font.PLAIN, 15);
+    public static Font FONT_16 = new Font("SansSerif", Font.PLAIN, 16);
 
 
     public static boolean isEmpty(String str) {

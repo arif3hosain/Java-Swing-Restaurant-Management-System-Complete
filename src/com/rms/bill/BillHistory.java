@@ -24,26 +24,27 @@ import java.util.List;
 
 public class BillHistory extends JFrame{
 
-    String columns[] = new String[] {"Serial","Bill Time","Customer Bill","VAT","Discount","Total Bill"};
+    String columns[] = new String[] {"SERIAL","INVOICE NO","BILL TIME","CUSTOMER BILL","VAT","DISCOUNT","PAID BILL"};
     private JFrame mainFrame;
     JTable tbl = null;
     DefaultTableModel dtm = null;
     PreparedStatement pst;
     ResultSet rs;
     DBConnection con = new DBConnection();
-    Font font = new Font("SansSerif", Font.BOLD, 15);
+
     JButton btnSearch = new JButton("Search");
     JButton btnExportPDF = new JButton("Export PDF");
-    JTextField fromDate = new JTextField("DD/MM/YYYY");
-    JTextField toDate = new JTextField("DD/MM/YYYY");
+    JTextField fromDate = new JTextField("");
+    JTextField toDate = new JTextField("");
     JLabel message = new JLabel("5 transactions have been found!");
 
 
     public BillHistory(){
         mainFrame = new JFrame("Bill Generator");
-        mainFrame.setSize(1100,900);
+        mainFrame.setSize(1300,900);
         mainFrame.setResizable(false);
         mainFrame.setLayout(null);
+        mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
         try{
             mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
@@ -53,11 +54,11 @@ public class BillHistory extends JFrame{
         }
 
         JPanel top = new JPanel(null);
-        top.setBackground(Color.lightGray);
-        top.setBounds(0,0,1100,100);
+        top.setBackground(Color.orange);
+        top.setBounds(0,0,1300,100);
         JPanel bottom = new JPanel(null);
-        bottom.setBackground(Color.orange);
-        bottom.setBounds(0,100,1100,800);
+       // bottom.setBackground(Color.orange);
+        bottom.setBounds(0,100,1300,800);
         fromDate.setBounds(170,50,200,35);
         fromDate.setText(Utils.getTokenDate(new Date()));
         top.add(fromDate);
@@ -75,15 +76,15 @@ public class BillHistory extends JFrame{
 
 
         btnSearch.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-               searchHistory();
-           }
-       });
+            public void actionPerformed(ActionEvent e) {
+                searchHistory();
+            }
+        });
         btnExportPDF.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              dataPass();
-           }
-       });
+            public void actionPerformed(ActionEvent e) {
+                dataPass();
+            }
+        });
 
         tbl = new JTable();
         dtm = new DefaultTableModel(0, 0){
@@ -95,12 +96,21 @@ public class BillHistory extends JFrame{
         };
         dtm.setColumnIdentifiers(columns);
         tbl.setModel(dtm);
-        tbl.setFont(font);
+        tbl.setFont(Utils.FONT_16);
+        // tbl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // Allow manual sizing
+        tbl.getColumnModel().getColumn(0).setPreferredWidth(30);   // SERIAL - small
+        tbl.getColumnModel().getColumn(1).setPreferredWidth(100);   // SERIAL - small
+        tbl.getColumnModel().getColumn(2).setPreferredWidth(200);  // CREATED TIME - large
+        tbl.getColumnModel().getColumn(3).setPreferredWidth(80);  // CREATED TIME - large
+        tbl.getColumnModel().getColumn(4).setPreferredWidth(50);  // CREATED TIME - large
+        tbl.getColumnModel().getColumn(5).setPreferredWidth(50);  // CREATED TIME - large
+        tbl.getColumnModel().getColumn(6).setPreferredWidth(80);  // CREATED TIME - large
+//        tbl.getColumnModel().getColumn(7).setPreferredWidth(150);  // CREATED TIME - large
+
         initialFillUp("","");
         JScrollPane pane = new JScrollPane(tbl, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        pane.setBounds(0,0,1100,700);
+        pane.setBounds(0,0,1300,700);
         bottom.add(pane);
-        tbl.setFont(font);
 
 
         mainFrame.add(top);
@@ -120,10 +130,10 @@ public class BillHistory extends JFrame{
         if(fromDate.trim().length() >0 & toDate.trim().length() >0) {
             sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
         }else{
-          
-            sql = "select * from bill order by id desc limit 300";
+
+            sql = "select * from bill order by id desc ";
         }
-            try {
+        try {
             pst = con.mkDataBase().prepareStatement(sql);
             rs = pst.executeQuery();
             int i = 0;
@@ -132,17 +142,20 @@ public class BillHistory extends JFrame{
                 row++;
                 String data[] = new String[]{
                         String.valueOf(row),
+                        rs.getString("invoice_no"),
                         Utils.dateToStr(rs.getTimestamp("created_date")),
-                        rs.getString("amount"),
+                        rs.getString("total"),
                         rs.getString("vat_amt"),
                         rs.getString("discount_amt"),
-                        rs.getString("total")};
+                        rs.getString("amount")
+                       // , rs.getString("description")
+                };
                 dtm.addRow(data);
                 i++;
             }
             message.setText(row +" Transactions have been found!");
         } catch (Exception e) {
-                message.setText("Input correct date format - DD/MM/YYYY");
+            message.setText("Input correct date format - YYYY-MM-DD");
         }
     }
 
@@ -150,57 +163,57 @@ public class BillHistory extends JFrame{
     public void exportPDF(String fromDate,String toDate)  {
         message.setText(0 +" Transactions have been found!");
         String sql = "";
-      if(fromDate != null || toDate != null) {
-          sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
-          System.out.println(sql);
-      }else{
-         sql = "select * from bill order by id desc ";
-      }
-            try {
-                pst = con.mkDataBase().prepareStatement(sql);
-                rs = pst.executeQuery();
-                int i = 0;
-                int row = 0;
-                String[] fields = new String[]{"created_date", "description", "vat_amt", "discount_amt", "total","amount"};
-                List inList = new ArrayList();
-                Map map = new HashMap();
-                map.put("logo","/home/ahosain/Documents/personal/RMS/logo.png");
+        if(fromDate != null || toDate != null) {
+            sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
+            System.out.println(sql);
+        }else{
+            sql = "select * from bill order by id desc ";
+        }
+        try {
+            pst = con.mkDataBase().prepareStatement(sql);
+            rs = pst.executeQuery();
+            int i = 0;
+            int row = 0;
+            String[] fields = new String[]{"created_date", "description", "vat_amt", "discount_amt", "total","amount"};
+            List inList = new ArrayList();
+            Map map = new HashMap();
+            map.put("logo","/home/ahosain/Documents/personal/RMS/logo.png");
 
-                while (rs.next()) {
-                    row ++;
-                    Date billingTime = rs.getTimestamp("created_date");
-                    String description = "";
-                    Double vat = rs.getDouble("vat_amt");
-                    Double discount = rs.getDouble("discount_amt");
-                    Double totalBill = rs.getDouble("total");
-                    Double foodBill = rs.getDouble("amount");
-                    inList.add(new Object[]{billingTime,description, vat, discount, totalBill, foodBill});
-                }//rs.next();
-                if(row > 0) {
-                    JasperPrint jasperPrint = null;
-                    InputStream jasperStream = null;
-                    jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
+            while (rs.next()) {
+                row ++;
+                Date billingTime = rs.getTimestamp("created_date");
+                String description = "";
+                Double vat = rs.getDouble("vat_amt");
+                Double discount = rs.getDouble("discount_amt");
+                Double totalBill = rs.getDouble("total");
+                Double foodBill = rs.getDouble("amount");
+                inList.add(new Object[]{billingTime,description, vat, discount, totalBill, foodBill});
+            }//rs.next();
+            if(row > 0) {
+                JasperPrint jasperPrint = null;
+                InputStream jasperStream = null;
+                jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
 //            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
-                    jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
-                    JasperExportManager.exportReportToPdfFile(jasperPrint, Frame2new.reportPath +"(" + fromDate + ") - (" + toDate + ").PDF");
-                    message.setText(row + " Transactions have been exported!");
-                }else{
-                    message.setText("No data found to export!");
-                }
-            } catch (SQLException e) {
-                //e.printStackTrace();
-                message.setText("Please input valid date format !");
-               // //e.printStackTrace();
-                //message.setText("Input correct date format - DD/MM/YYYY");
-            } catch ( JRException e) {
-                e.printStackTrace();
-                message.setText("Warning when exporting report");
-                JOptionPane.showMessageDialog(null, "Warning when exporting report");
-            }catch ( IOException e) {
-                //e.printStackTrace();
-                message.setText("Please input date with correct format (e.g. 20-06-2021");
-                JOptionPane.showMessageDialog(null, "Please input correct format (e.g.yyyy/mm/dd");
+                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Frame2new.reportPath +"(" + fromDate + ") - (" + toDate + ").PDF");
+                message.setText(row + " Transactions have been exported!");
+            }else{
+                message.setText("No data found to export!");
             }
+        } catch (SQLException e) {
+            //e.printStackTrace();
+            message.setText("Please input valid date format !");
+            // //e.printStackTrace();
+            //message.setText("Input correct date format - DD/MM/YYYY");
+        } catch ( JRException e) {
+            e.printStackTrace();
+            message.setText("Warning when exporting report");
+            JOptionPane.showMessageDialog(null, "Warning when exporting report");
+        }catch ( IOException e) {
+            //e.printStackTrace();
+            message.setText("Please input date with correct format (e.g. 20-06-2021");
+            JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
+        }
     }
 
 

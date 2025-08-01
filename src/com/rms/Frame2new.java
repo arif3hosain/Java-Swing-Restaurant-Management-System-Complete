@@ -86,7 +86,7 @@ public class Frame2new {
            billHistory.setEnabled(false);
            btnBill.setEnabled(false);
        }
-       mainFrame.setVisible(true);
+       mainFrame.setLocationRelativeTo(null);
    }
 
 
@@ -133,8 +133,9 @@ public class Frame2new {
 	  controlPanel.add(btnBill);
 	  controlPanel.add(billHistory);
 	  controlPanel.add(setting);
+       mainFrame.setLocationRelativeTo(null);
       mainFrame.setVisible(true);
-	  mainFrame.setLocationRelativeTo(null);
+
 
 
    }

@@ -226,22 +226,31 @@ public class GenerateBill extends JFrame {
 
                     @Override
                     public void keyTyped(KeyEvent e) {
-                        //  System.out.println("keyTyped");
                     }
-
                     public void keyPressed(KeyEvent e){
-//                        System.out.println("keyPressed");
-//                        if(e.getKeyChar() == KeyEvent.VK_ENTER){
-//
-//                            System.out.println("VK_ENTER");
-//                        }
                     }
 
                     @Override
                     public void keyReleased(KeyEvent e) {
                         double discountAmt = Utils.getDoubleVal(discountPercentage.getText());
                         amtCalculator();
-                        System.out.println("------------------");
+                    }
+                }
+        );
+
+        txtDiscountAmt.addKeyListener(
+                new KeyListener(){
+
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                    }
+                    public void keyPressed(KeyEvent e){
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                        double discountAmt = Utils.getDoubleVal(discountPercentage.getText());
+                        amtCalculator();
                     }
                 }
         );
@@ -605,17 +614,38 @@ public class GenerateBill extends JFrame {
         amtCalculator();
     }
 
-    public void amtCalculator(){
-        Double amt = 0.0;
-        for(foodCart f: foodCartList){
-            amt +=f.price;
+    public void amtCalculator() {
+        double amt = 0.0;
+
+        // Calculate total amount from cart
+        for (foodCart f : foodCartList) {
+            amt += f.price;
         }
-        txtTotalAmt.setText(String.valueOf(amt));
-        txtDiscountAmt.setText(String.valueOf((amt* Utils.getDoubleVal(discountPercentage.getText()))/100));
-        txtVATAmt.setText(String.valueOf(((amt-Utils.getDoubleVal(txtDiscountAmt.getText()))*Utils.getDoubleVal(Frame2new.vat))/100));
-        Double lastAmt = ((amt - getDoubleValue(txtDiscountAmt.getText())) +  getDoubleValue(txtVATAmt.getText()));
-        txtAmt.setText(String.valueOf(lastAmt));
+        txtTotalAmt.setText(String.valueOf(Math.round(amt)));
+
+        // Try to get percentage discount
+        double discountPercent = Utils.getDoubleVal(discountPercentage.getText());
+        double discountAmt;
+
+        if (discountPercent > 0) {
+            discountAmt = (amt * discountPercent) / 100;
+        } else {
+            // Use manual discount if percentage is not provided or is <= 0
+            discountAmt = Utils.getDoubleVal(txtDiscountAmt.getText());
+        }
+
+        txtDiscountAmt.setText(String.valueOf(Math.round(discountAmt)));
+
+        // Calculate VAT on amount after discount
+        double vatPercent = Utils.getDoubleVal(Frame2new.vat);
+        double vatAmt = ((amt - discountAmt) * vatPercent) / 100;
+        txtVATAmt.setText(String.valueOf(Math.round(vatAmt)));
+
+        // Final total amount
+        double finalAmt = amt - discountAmt + vatAmt;
+        txtAmt.setText(String.valueOf(Math.round(finalAmt)));
     }
+
 
 
     class foodCart{

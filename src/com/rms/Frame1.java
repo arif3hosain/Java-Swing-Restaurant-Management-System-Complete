@@ -80,6 +80,7 @@ public class Frame1 {
 		mainFrame.add(submit);
 
 		submit.addActionListener(this::submitActionPerformed);
+		mainFrame.setLocationRelativeTo(null);
 		mainFrame.setVisible(true);
 	}
 	public void submitActionPerformed(java.awt.event.ActionEvent evt){
