@@ -45,7 +45,7 @@ public class ItemView {
          }
       });
        try{
-           mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+           mainFrame.setIconImage(ImageIO.read(new File(LOGO_PATH)));
        }
        catch (Exception ex){
            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);

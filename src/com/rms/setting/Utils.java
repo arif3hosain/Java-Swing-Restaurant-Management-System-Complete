@@ -28,12 +28,15 @@ public class Utils {
 //    public static String resourcePath = "/home/arifhosain/ccl_resources";
 //    public static String resourcePath = "/home/tomcat/ccl_resources";
 //    public static String resourcePath = "D:/ccl_resources";
-    public static String logoPath = "/home/ahosain/Documents/personal/RMS/images/logo.png";
+    public static String LOGO_PATH = "";
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
     public static String TITLE = "BANGLA BHOJ & BBQ";
     public static String ICON_PATH = "/home/ahosain/Documents/personal/RMS/images/icon.png";
     public static Font FONT_15 = new Font("SansSerif", Font.PLAIN, 15);
     public static Font FONT_16 = new Font("SansSerif", Font.PLAIN, 16);
+    public static String REPORT_PATH;
+    public static String VAT;
+    public static String DISCOUNT;
 
 
     public static boolean isEmpty(String str) {

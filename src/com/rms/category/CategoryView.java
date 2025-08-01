@@ -43,7 +43,7 @@ public class CategoryView {
         });
 
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);

@@ -34,9 +34,7 @@ public class Frame2new {
     JButton btnCategory = new JButton("Category");
     JButton billHistory = new JButton("Bill History");
     JButton setting = new JButton("Setting");
-    public static String reportPath;
-    public static String vat;
-    public static String discount;
+
     public static Integer fromID;
     public static Integer storedDays;
     public static Integer days;
@@ -55,7 +53,6 @@ public class Frame2new {
       mainFrame.setLayout(new GridLayout(3,1));
       mainFrame.setResizable(false);
 	  mainFrame.getContentPane().setBackground(Color.orange);
-       getCategory();
        countDay();
       mainFrame.addWindowListener(new WindowAdapter() {
          public void windowClosing(WindowEvent windowEvent){
@@ -72,8 +69,7 @@ public class Frame2new {
       mainFrame.add(statusLabel);
 
        try{
-           System.out.println(Utils.logoPath);
-           mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+           mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
        }
        catch (Exception ex){
            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
@@ -140,7 +136,7 @@ public class Frame2new {
 
    }
 
-    public static  void getCategory() {
+    public static  void setDefaultValues() {
         ResultSet rs;
         PreparedStatement pst;
         DBConnection con = new DBConnection();
@@ -150,10 +146,10 @@ public class Frame2new {
             String stored_days = null;
             String from_id = null;
             while(rs.next()){
-                reportPath = rs.getString("report_path");
-                vat = rs.getString("vat");
-                discount = rs.getString("discount");
-               // String logo = rs.getString("logo");
+                Utils.REPORT_PATH = rs.getString("report_path");
+                Utils.VAT = rs.getString("vat");
+                Utils.DISCOUNT = rs.getString("discount");
+                Utils.LOGO_PATH = rs.getString("logo");
                 stored_days = rs.getString("duration_count");
                 from_id = rs.getString("subscription_from");
             }

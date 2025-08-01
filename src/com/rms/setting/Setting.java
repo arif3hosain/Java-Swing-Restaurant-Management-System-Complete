@@ -37,7 +37,7 @@ public class Setting {
 
     private void prepareGUI(){
         mainFrame = new JFrame("Store Setting");
-        mainFrame.setSize(430,500);
+        mainFrame.setSize(600,500);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
         mainFrame.getContentPane().setBackground(Color.gray);
@@ -47,7 +47,7 @@ public class Setting {
             }
         });
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
@@ -56,11 +56,11 @@ public class Setting {
         headerLabel.setBounds(50,10,300,50);
         JPanel topPanel = new JPanel(null);
         topPanel.setBackground(Color.orange);
-        topPanel.setBounds(0,0,500,70);
+        topPanel.setBounds(0,0,600,70);
         topPanel.add(headerLabel);
 
         
-        bottomPanel.setBounds(0,70,500,400);
+        bottomPanel.setBounds(0,70,600,400);
         mainFrame.add(bottomPanel);
 
         mainFrame.add(headerLabel);
@@ -96,9 +96,9 @@ public class Setting {
 
 
         txtReportPath = new JTextField();
-        txtReportPath.setBounds(140,50,150,30);
+        txtReportPath.setBounds(140,50,350,30);
         txtLogoPath = new JTextField();
-        txtLogoPath.setBounds(140,90,150,30);
+        txtLogoPath.setBounds(140,90,350,30);
         txtVAT = new JTextField();
         txtVAT.setBounds(140,130,150,30);
         txtDiscount = new JTextField();

@@ -1,11 +1,10 @@
 package com.rms.bill;
 
-import com.rms.Frame2new;
+import com.rms.PaymentType;
 import com.rms.service.AppService;
 import com.rms.setting.Utils;
 import db.DBConnection;
 import dto.Item;
-import print.PrinterService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,10 +18,11 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static com.rms.Common.todayDateTime;
 import static com.rms.setting.Utils.getString;
 
 public class GenerateBill extends JFrame {
@@ -51,7 +51,8 @@ public class GenerateBill extends JFrame {
     JTextField txtPrice = null;
     JComboBox comboItem=null;
     JComboBox comboSize=null;
-    JComboBox catCombo=null;
+    JComboBox<Object> catCombo=null;
+    JComboBox<PaymentType> payment=null;
     JTextField search = new JTextField();
     List<Map<String,foodCart>> cart = new ArrayList<>();
     List<foodCart> foodCartList = new ArrayList<>();
@@ -77,7 +78,7 @@ public class GenerateBill extends JFrame {
         mainFrame.setBackground(Color.lightGray);
         mainFrame.setVisible(true);
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
@@ -255,9 +256,9 @@ public class GenerateBill extends JFrame {
                 }
         );
 
-        vatPercentage.setText(String.valueOf(Frame2new.vat));
+        vatPercentage.setText(String.valueOf(Utils.VAT));
         vatPercentage.setEditable(false);
-        discountPercentage.setText(String.valueOf(Frame2new.discount));
+        discountPercentage.setText(String.valueOf(Utils.DISCOUNT));
 
         txtVATAmt = new JTextField();
         txtVATAmt.setBounds(240,460,120,30);
@@ -386,6 +387,7 @@ public class GenerateBill extends JFrame {
                     dtm.setRowCount(0);
                     foodCartList = new ArrayList<>();
                 }
+                payment.setSelectedItem(PaymentType.Cash.name());
             }
         });
 
@@ -396,10 +398,14 @@ public class GenerateBill extends JFrame {
         btnDelete.setFont(font);
         left.add(btnDelete);
 
-        JButton save = new JButton("Save & Close");
-        save.setBounds(120,600,120,35);
-        save.setFont(font);
-        //center.add(save);
+        Object[] paymentItems = new Object[3];
+        paymentItems[0] = PaymentType.Cash.name();
+        paymentItems[1] = PaymentType.MFS.name();
+        paymentItems[2] = PaymentType.Credit.name();
+        payment = new JComboBox(paymentItems);
+        payment.setBounds(120,600,120,35);
+        payment.setFont(font);
+        center.add(payment);
 
         JButton print = new JButton("Print Out");
         print.setBounds(250,600,120,35);
@@ -637,7 +643,7 @@ public class GenerateBill extends JFrame {
         txtDiscountAmt.setText(String.valueOf(Math.round(discountAmt)));
 
         // Calculate VAT on amount after discount
-        double vatPercent = Utils.getDoubleVal(Frame2new.vat);
+        double vatPercent = Utils.getDoubleVal(Utils.VAT);
         double vatAmt = ((amt - discountAmt) * vatPercent) / 100;
         txtVATAmt.setText(String.valueOf(Math.round(vatAmt)));
 
@@ -793,14 +799,15 @@ public class GenerateBill extends JFrame {
         Double vat = getDoubleValue(txtVATAmt.getText());
         Double amount = getDoubleValue(txtAmt.getText());
         try{
-            pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount) values (" +
-                    " CURRENT_TIMESTAMP,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount,payment_method) values (" +
+                    " CURRENT_TIMESTAMP,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             //     pst.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
             pst.setString(1, "");
             pst.setDouble(2, vat);
             pst.setDouble(3, discount);
             pst.setDouble(4, price);
             pst.setDouble(5, amount);
+            pst.setString(6, payment.getSelectedItem().toString());
             if(amount >0){
                 pst.execute();
                 txtPrice.setText("");
@@ -819,6 +826,7 @@ public class GenerateBill extends JFrame {
                 for(int i =0; i<tableRows; i++){
                     foodCart fc = new foodCart();
                     fc.name = tbl.getModel().getValueAt(i,1).toString();
+                    fc.size = tbl.getModel().getValueAt(i,2).toString();
                     fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i,3).toString());
                     fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i,4).toString());
                     fc.price = Double.parseDouble(tbl.getModel().getValueAt(i,5).toString());
@@ -836,7 +844,7 @@ public class GenerateBill extends JFrame {
 
         }
 
-
+    payment.setSelectedItem(PaymentType.Cash.name());
     }
 
 }

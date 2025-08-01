@@ -34,6 +34,7 @@ public class BillHistory extends JFrame{
 
     JButton btnSearch = new JButton("Search");
     JButton btnExportPDF = new JButton("Export PDF");
+    JButton btnAdvanceReport = new JButton("Advance Filter");
     JTextField fromDate = new JTextField("");
     JTextField toDate = new JTextField("");
     JLabel message = new JLabel("5 transactions have been found!");
@@ -47,7 +48,7 @@ public class BillHistory extends JFrame{
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
         try{
-            mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+            mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
@@ -71,6 +72,7 @@ public class BillHistory extends JFrame{
         top.add(btnExportPDF);
         message.setBounds(800,50,300,25);
         top.add(message);
+
 
 
 
@@ -195,7 +197,7 @@ public class BillHistory extends JFrame{
                 jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
 //            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
                 jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
-                JasperExportManager.exportReportToPdfFile(jasperPrint, Frame2new.reportPath +"(" + fromDate + ") - (" + toDate + ").PDF");
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_PATH +"(" + fromDate + ") - (" + toDate + ").PDF");
                 message.setText(row + " Transactions have been exported!");
             }else{
                 message.setText("No data found to export!");

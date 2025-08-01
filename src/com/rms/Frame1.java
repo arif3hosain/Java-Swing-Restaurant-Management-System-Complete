@@ -30,8 +30,7 @@ public class Frame1 {
 		mainFrame.setLayout(null);
 		mainFrame.getContentPane().setBackground(Color.pink);
 		try{
-			System.out.print(Utils.logoPath);
-			mainFrame.setIconImage(ImageIO.read(new File(Utils.logoPath)));
+			mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
 			
 		}
 		catch (Exception ex){
@@ -94,8 +93,8 @@ public class Frame1 {
 		}
 	}
 	public static void main(String[] a) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		
-//		System.out.println("hi");
+	 	Frame2new.setDefaultValues();
+		System.out.println( "> : "+Utils.LOGO_PATH);
 		try {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -107,9 +106,5 @@ public class Frame1 {
 			// If Nimbus is not available, you can set the GUI to another look and feel.
 		}
 		Frame1 f = new Frame1();
-
 	}
-
 }
-	//palki
-	//palki011998
