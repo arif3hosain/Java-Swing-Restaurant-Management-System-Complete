@@ -15,10 +15,11 @@ public class DBConnection {
             Class.forName("org.postgresql.Driver");
             c = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Database connection failed");
+        	e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database connection failed, "+ e.getMessage());
 //            e.printStackTrace();
 //            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
+           // System.exit(0);
         }
         return c;
     }
