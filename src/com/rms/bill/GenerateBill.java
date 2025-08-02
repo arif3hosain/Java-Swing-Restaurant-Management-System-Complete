@@ -477,7 +477,7 @@ public class GenerateBill extends JFrame {
 
         print.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               String fullText = "";
+               StringBuilder fullText = new StringBuilder();
                orderedFoodList = new ArrayList<>();
                int tableRows = tbl.getRowCount();
                String line = "";
@@ -485,29 +485,37 @@ public class GenerateBill extends JFrame {
 
                 line = Utils.TITLE;
                 String format = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format + line + format+"\n";
+                fullText.append(format).append(line).append(format).append("\n");
 
                 line = "Signboard, Siddhirganj, Narayanganj";
                 String format2 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format2 + line + format2;
+                fullText.append(format2).append(line).append(format2);
 
                 line = "Cell: 01600101001";
                 String format3 = "\n"+ String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format3 + line + format3+"\n";
+                fullText.append(format3).append(line).append(format3).append("\n");
 
                 line = todayDateTime();
                 String format4 =  String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format4 + line + format4+"\n";
+                fullText.append(format4).append(line).append(format4).append("\n");
 
                 line = "Invoice: 0125478563";
                 String format5 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format5 + line + format5+"\n";
+                fullText.append(format5).append(line).append(format5).append("\n");
 
                 line = "User : "+Utils.authority.username;
                 String format6 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-                fullText += format6 + line + format6+"\n";
+                fullText.append(format6).append(line).append(format6).append("\n\n");
 
-               fullText += "\n------------------------------------------\n";
+
+                line = "Item";
+                fullText.append("Item")
+                       .append(String.format("%-" + (42 - 22) + "s", text)).append("Qty X Rate")
+                       .append(String.format("%-" + (42 - 39) + "s", text)).append("Price")
+                        .append("\n");
+
+//                fullText.append(headerLine).append("\n");
+                fullText.append("==========================================\n");
                int products = 0;
                for(int i =0; i<tableRows; i++){
                    products ++;
@@ -519,34 +527,35 @@ public class GenerateBill extends JFrame {
                    long rate = Math.round(fc.price);
                    line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")"+rate;
                    line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")" + String.format("%-"+(42-line.length())+"s",text)+Math.round(rate)+"\n";
-                   fullText += line;
+                   fullText.append(line);
                    line = "";
                }
                line = "";
-               fullText += "\n------------------------------------------\n";
+               fullText.append("\n------------------------------------------\n");
                Double discount = getDoubleValue(txtDiscountAmt.getText());
                line = "Discount("+ getString(discountPercentage.getText())+")"+discount;
-               fullText += "Discount("+ getString(discountPercentage.getText())+")"+String.format("%-" + (42 - line.length()) + "s", text)+Math.round(discount)+"\n";
+               fullText.append("Discount(").append(getString(discountPercentage.getText())).append(")").append(String.format("%-" + (44 - line.length()) + "s", text)).append(Math.round(discount)).append("\n");
 
                Double vat = getDoubleValue(txtVATAmt.getText());
                line = "VAT("+ getString(vatPercentage.getText())+")"+vat;
-               fullText += "VAT("+ getString(vatPercentage.getText())+")"+String.format("%-" + (42 - line.length()) + "s", text)+Math.round(vat);
+               fullText.append("VAT(").append(getString(vatPercentage.getText())).append(")").append(String.format("%-" + (44 - line.length()) + "s", text)).append(Math.round(vat));
 
-               fullText += "\n------------------------------------------\n";
+               fullText.append("\n------------------------------------------\n");
                Double amount = getDoubleValue(txtAmt.getText());
-               line = "Total (Payment Method: "+payment.getSelectedItem()+")" +amount;
-               line =  "Total  (Payment Method: "+payment.getSelectedItem()+")" + String.format("%-"+(42-line.length())+"s",text)+Math.round(amount);
-               fullText += line+"\n";
+               line = "Grand Total (Payment Method: "+payment.getSelectedItem()+")" +amount;
+               line =  "Grand Total (Payment Method: "+payment.getSelectedItem()+")" + String.format("%-"+(44-line.length())+"s",text)+Math.round(amount);
+               fullText.append(line).append("\n");
+                fullText.append("==========================================\n\n");
 
-               line = "\nNumber of Item purchased: "+products+"\n\n";
+               line = "\nNumber of Item purchased: "+products+"\n\n\n\n";
                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-               fullText += format3 + line + format3+"\n\n\n";
-//                System.out.println(fullText);
-               PrinterService printerService = new PrinterService();
-               printerService.printString("SEWOO SLK-TS100",fullText);
-               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-               printerService.printBytes("SEWOO SLK-TS100", cutP);
-                saveTransaction();
+               fullText.append(format3).append(line).append(format3).append("\n\n\n");
+                System.out.println(fullText);
+//               PrinterService printerService = new PrinterService();
+//               printerService.printString("SEWOO SLK-TS100",fullText);
+//               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
+//               printerService.printBytes("SEWOO SLK-TS100", cutP);
+//                saveTransaction();
                 JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
             }
         });

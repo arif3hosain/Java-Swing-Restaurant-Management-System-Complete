@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+spring.log
+
+# Others
+*.swp
+
+# properties files
+application-local.properties
+application-test.properties
+application.properties
+logback.xml
+.http
+
+# Gatling
+gatling-results/
+gatling
