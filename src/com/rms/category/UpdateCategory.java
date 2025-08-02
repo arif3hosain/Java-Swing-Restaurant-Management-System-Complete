@@ -99,7 +99,6 @@ public class UpdateCategory {
                         JOptionPane.showMessageDialog(null, "Please Enter Category Name ");
                     }
                 }catch(Exception ex){
-                    System.out.println(ex);
                     JOptionPane.showMessageDialog(null, "Inserting Error 102: " + tf2.getText());
                 }finally{
                 }

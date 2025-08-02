@@ -982,7 +982,6 @@ public class Common {
     }
 
     public static String addDate(Date currentDate,Integer addDate){
-        System.out.println(currentDate);
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
         c.add(Calendar.DATE, addDate);
@@ -991,7 +990,6 @@ public class Common {
     }
 
     public static Date getAddDate(Date currentDate,Integer addDate){
-        System.out.println(currentDate);
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
         c.add(Calendar.DATE, addDate);

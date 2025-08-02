@@ -1,5 +1,6 @@
 package com.rms;
 
+import com.rms.service.AppService;
 import com.rms.setting.Utils;
 
 import javax.imageio.ImageIO;
@@ -65,7 +66,7 @@ public class Frame1 {
 		devInfo.setForeground(Color.white);
 		mainFrame.add(devInfo);
 
-		id=new JTextField("rms");
+		id=new JTextField("samim");
 		id.setBounds(300,125,200,30);
 		//id.setText("palki");
 		mainFrame.add(id);
@@ -83,18 +84,17 @@ public class Frame1 {
 		mainFrame.setVisible(true);
 	}
 	public void submitActionPerformed(java.awt.event.ActionEvent evt){
-		
-		if(id.getText().equals("rms") && pass.getText().equals("123456")){
+		AppService service = new AppService();
+		if(service.login(id.getText(),new String(pass.getPassword()))){
 			mainFrame.setVisible(false);
 			Frame2new fn=new Frame2new();
 			fn.showButtonDemo();
 		} else{
-			JOptionPane.showMessageDialog(null, "Invalid password!");
+			JOptionPane.showMessageDialog(null, "Invalid credentials!");
 		}
 	}
 	public static void main(String[] a) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 	 	Frame2new.setDefaultValues();
-		System.out.println( "> : "+Utils.LOGO_PATH);
 		try {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {

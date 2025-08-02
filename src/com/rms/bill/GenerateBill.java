@@ -76,6 +76,7 @@ public class GenerateBill extends JFrame {
         //  mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //  mainFrame.setUndecorated(true);
         mainFrame.setBackground(Color.lightGray);
+        mainFrame.setLocationRelativeTo(null); // <-- Center on screen
         mainFrame.setVisible(true);
         try{
             mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
@@ -799,8 +800,8 @@ public class GenerateBill extends JFrame {
         Double vat = getDoubleValue(txtVATAmt.getText());
         Double amount = getDoubleValue(txtAmt.getText());
         try{
-            pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount,payment_method) values (" +
-                    " CURRENT_TIMESTAMP,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount,payment_method,created_by) values (" +
+                    " CURRENT_TIMESTAMP,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             //     pst.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
             pst.setString(1, "");
             pst.setDouble(2, vat);
@@ -808,6 +809,8 @@ public class GenerateBill extends JFrame {
             pst.setDouble(4, price);
             pst.setDouble(5, amount);
             pst.setString(6, payment.getSelectedItem().toString());
+            pst.setString(7,Utils.authority.username);
+
             if(amount >0){
                 pst.execute();
                 txtPrice.setText("");

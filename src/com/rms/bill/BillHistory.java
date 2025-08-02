@@ -24,7 +24,7 @@ import java.util.List;
 
 public class BillHistory extends JFrame{
 
-    String columns[] = new String[] {"SERIAL","INVOICE NO","BILL TIME","CUSTOMER BILL","VAT","DISCOUNT","PAID BILL"};
+    String columns[] = new String[] {"SERIAL","INVOICE NO","BILL TIME","CUSTOMER BILL","DISCOUNT","VAT","PAID BILL", "METHOD"};
     private JFrame mainFrame;
     JTable tbl = null;
     DefaultTableModel dtm = null;
@@ -34,14 +34,14 @@ public class BillHistory extends JFrame{
 
     JButton btnSearch = new JButton("Search");
     JButton btnExportPDF = new JButton("Export PDF");
-    JButton btnAdvanceReport = new JButton("Advance Filter");
+    JButton btnAdvanceReport = new JButton("Advance Report");
     JTextField fromDate = new JTextField("");
     JTextField toDate = new JTextField("");
     JLabel message = new JLabel("5 transactions have been found!");
 
 
     public BillHistory(){
-        mainFrame = new JFrame("Bill Generator");
+        mainFrame = new JFrame("Bill History");
         mainFrame.setSize(1300,900);
         mainFrame.setResizable(false);
         mainFrame.setLayout(null);
@@ -70,12 +70,10 @@ public class BillHistory extends JFrame{
         top.add(btnSearch);
         btnExportPDF.setBounds(680,50,100,35);
         top.add(btnExportPDF);
-        message.setBounds(800,50,300,25);
+        btnAdvanceReport.setBounds(790,50,120,35);
+        top.add(btnAdvanceReport);
+        message.setBounds(950,50,300,25);
         top.add(message);
-
-
-
-
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -85,6 +83,12 @@ public class BillHistory extends JFrame{
         btnExportPDF.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dataPass();
+            }
+        });
+
+        btnAdvanceReport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              new ReportBuilder();
             }
         });
 
@@ -107,7 +111,7 @@ public class BillHistory extends JFrame{
         tbl.getColumnModel().getColumn(4).setPreferredWidth(50);  // CREATED TIME - large
         tbl.getColumnModel().getColumn(5).setPreferredWidth(50);  // CREATED TIME - large
         tbl.getColumnModel().getColumn(6).setPreferredWidth(80);  // CREATED TIME - large
-//        tbl.getColumnModel().getColumn(7).setPreferredWidth(150);  // CREATED TIME - large
+        tbl.getColumnModel().getColumn(7).setPreferredWidth(70);  // CREATED TIME - large
 
         initialFillUp("","");
         JScrollPane pane = new JScrollPane(tbl, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -147,9 +151,10 @@ public class BillHistory extends JFrame{
                         rs.getString("invoice_no"),
                         Utils.dateToStr(rs.getTimestamp("created_date")),
                         rs.getString("total"),
-                        rs.getString("vat_amt"),
                         rs.getString("discount_amt"),
-                        rs.getString("amount")
+                        rs.getString("vat_amt"),
+                        rs.getString("amount"),
+                        rs.getString("payment_method")
                        // , rs.getString("description")
                 };
                 dtm.addRow(data);
@@ -167,7 +172,6 @@ public class BillHistory extends JFrame{
         String sql = "";
         if(fromDate != null || toDate != null) {
             sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
-            System.out.println(sql);
         }else{
             sql = "select * from bill order by id desc ";
         }

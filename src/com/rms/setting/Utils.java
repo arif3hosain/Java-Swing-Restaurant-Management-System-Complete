@@ -1,5 +1,6 @@
 package com.rms.setting;
 
+import dto.Authority;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
@@ -37,6 +38,7 @@ public class Utils {
     public static String REPORT_PATH;
     public static String VAT;
     public static String DISCOUNT;
+    public static Authority authority;;
 
 
     public static boolean isEmpty(String str) {
@@ -208,10 +210,7 @@ public class Utils {
     }
 
     public static String dateToStr(Date date) {
-        System.out.println(date);
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
-        System.out.println(fmt.format(date));
-        System.out.println("-------------------------------------");
         return fmt.format(date);
     }
 
@@ -269,6 +268,18 @@ public class Utils {
         return "";
     }
 
+    public static String convertToTableDate(Object date) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a");
+        try {
+            Date d = inputFormat.parse(date.toString());
+            return outputFormat.format(d);
+        } catch (ParseException ex) {
+            ex.printStackTrace(); // Optional for debugging
+        }
+        return "";
+    }
+
     public static java.sql.Date stringToTime(String sDate)
             throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -276,12 +287,6 @@ public class Utils {
         return new java.sql.Date(dl);
     }
 
-    public static java.sql.Date excelFormattedDate(String sDate)
-            throws ParseException {
-        SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        long dl = fmt.parse(sDate).getTime();
-        return new java.sql.Date(dl);
-    }
 
     public static String dateToStringForToken(Date date) {
         SimpleDateFormat fmt = new SimpleDateFormat("ddMM-yy");
@@ -1152,7 +1157,6 @@ public class Utils {
     }
 
     public static String addDate(Date currentDate,Integer addDate){
-        System.out.println(currentDate);
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
         c.add(Calendar.DATE, addDate);
@@ -1161,7 +1165,6 @@ public class Utils {
     }
 
     public static Date getAddDate(Date currentDate,Integer addDate){
-        System.out.println(currentDate);
         Calendar c = Calendar.getInstance();
         c.setTime(currentDate);
         c.add(Calendar.DATE, addDate);

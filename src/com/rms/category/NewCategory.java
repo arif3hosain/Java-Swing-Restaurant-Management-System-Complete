@@ -89,7 +89,6 @@ public class NewCategory {
                         JOptionPane.showMessageDialog(null, "Please Enter Category Name ");
                     }
                 }catch(Exception ex){
-                    System.out.println(ex);
                     JOptionPane.showMessageDialog(null, "Inserting Error 93 " );
                 }finally{
                 }

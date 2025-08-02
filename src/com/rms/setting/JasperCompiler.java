@@ -28,7 +28,6 @@ public class JasperCompiler {
             // Close the stream
             employeeReportStream.close();
 
-            System.out.println("Report compiled successfully!");
 
         } catch (Exception e) {
             e.printStackTrace();

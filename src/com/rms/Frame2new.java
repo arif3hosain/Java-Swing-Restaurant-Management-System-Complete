@@ -7,6 +7,7 @@ import com.rms.setting.Diff;
 import com.rms.setting.Setting;
 import com.rms.setting.Utils;
 import db.DBConnection;
+import dto.Role;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -114,7 +115,7 @@ public class Frame2new {
 
         billHistory.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-             BillHistory  bh = new BillHistory();
+         new BillHistory();
          }
 });
 
@@ -124,13 +125,22 @@ public class Frame2new {
             set.showButtonDemo();
          }
 });
-      controlPanel.add(btnItem);
-	  controlPanel.add(btnCategory);
-	  controlPanel.add(btnBill);
-	  controlPanel.add(billHistory);
-	  controlPanel.add(setting);
+      if(Utils.authority.role.equals(Role.ADMIN)) {
+          controlPanel.add(btnItem);
+          controlPanel.add(btnCategory);
+          controlPanel.add(btnBill);
+          controlPanel.add(billHistory);
+          controlPanel.add(setting);
+      } if(Utils.authority.role.equals(Role.USER)) {
+           controlPanel.add(btnBill);
+           btnBill.setPreferredSize(new Dimension(300, 40));
+           JPanel wrapper = new JPanel();
+           wrapper.setOpaque(false); // Make background transparent to match layout
+           wrapper.add(btnBill);
+           controlPanel.add(wrapper);
+       }
        mainFrame.setLocationRelativeTo(null);
-      mainFrame.setVisible(true);
+       mainFrame.setVisible(true);
 
 
 
@@ -198,8 +208,6 @@ public class Frame2new {
                    JOptionPane.showMessageDialog(null, "SQL Error found!");
                }
            }else{
-               System.out.println(days);
-               System.out.println(storedDays);
            }
 
     }

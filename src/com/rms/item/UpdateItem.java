@@ -171,7 +171,6 @@ public class UpdateItem {
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        System.out.println(ex);
                         JOptionPane.showMessageDialog(null, "Please input correct data format!");
                     } finally {
                     }

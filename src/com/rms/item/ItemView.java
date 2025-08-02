@@ -186,7 +186,6 @@ public class ItemView {
    }
 
    public void deleteItem(Long id){
-       System.out.println("---------------"+id);
        PreparedStatement pst;
        DBConnection con = new DBConnection();
        try{

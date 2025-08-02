@@ -29,11 +29,10 @@ public class CompileReport {
                 JRSaver.saveObject(jasperReport, aJrxml + ".jasper");
                 System.out.println("Compilation successful !" + aJrxml + ".jrxml");
             }
-            System.out.println("Done report compilation");
+
 
         } catch (Exception e) {
-            System.out.println("Report failed to compile");
-            //e.printStackTrace();
+           e.printStackTrace();
         }
     }
 }
