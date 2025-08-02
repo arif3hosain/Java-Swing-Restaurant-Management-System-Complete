@@ -111,6 +111,7 @@ public class GenerateBill extends JFrame {
         quantity = new JSpinner(value);
         txtPrice = new JTextField();
         addFood = new JButton("Add to Cart");
+        mainFrame.getRootPane().setDefaultButton(addFood);
         txtTotal = new JTextField();
         comboItem=new JComboBox(items);
         comboItem.setEditable(true);
@@ -119,14 +120,72 @@ public class GenerateBill extends JFrame {
         // Get the editor component (i.e., the text field inside combo box)
         JTextField editor = (JTextField) comboItem.getEditor().getEditorComponent();
 
+        // Replace the commented filtering code with this working version:
+
         editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Don't filter on Enter key or navigation keys
+                if (e.getKeyCode() == KeyEvent.VK_ENTER ||
+                        e.getKeyCode() == KeyEvent.VK_UP ||
+                        e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    return;
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    String input = editor.getText();
+                    if (input != null && !input.trim().isEmpty()) {
+                        filterComboBox(input);
+                    } else {
+                        // Reset to show all items when input is empty
+                        resetComboBox();
+                    }
+                });
+            }
+        });
+
+
+
+
+       /* editor.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 SwingUtilities.invokeLater(() -> {
                     String input = editor.getText();
                     filterComboBox(input);
                 });
             }
+        });*/
+
+       /* editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && comboItem.isPopupVisible()) {
+                    Object selected = comboItem.getSelectedItem();
+                    if (selected != null) {
+                        editor.setText(selected.toString());
+                    }
+                    comboItem.hidePopup(); // optionally close dropdown
+                    e.consume(); // prevent duplicate event
+                }
+            }
+        });*/
+
+     /*   editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && comboItem.isPopupVisible()) {
+                    Object selected = comboItem.getSelectedItem();
+                    if (selected != null) {
+                        editor.setText(selected.toString());
+                        comboItem.setSelectedItem(selected);
+                    }
+                    comboItem.hidePopup(); // close dropdown
+                    e.consume();
+                }
+            }
         });
+*/
+
 
 //        lblItem = new JLabel("Food Name");
 //        lblItem.setBounds(40,60,100,30);
@@ -363,6 +422,7 @@ public class GenerateBill extends JFrame {
                         f.unitPrice = Double.parseDouble(txtPrice.getText());
                         f.price = f.quantity * f.unitPrice;
                         refreshTable(f);
+                        editor.requestFocusInWindow();
                     }else{
                         JOptionPane.showMessageDialog(null, "Fill up all the fields !" );
                     }
@@ -752,7 +812,7 @@ public class GenerateBill extends JFrame {
         }
     }
 
-    private void filterComboBox(String input) {
+    public void filterComboBox(String input) {
 
         comboItem.hidePopup();
 
@@ -850,4 +910,30 @@ public class GenerateBill extends JFrame {
     payment.setSelectedItem(PaymentType.Cash.name());
     }
 
+
+    // Add this method to reset the combo box to show all items
+    private void resetComboBox() {
+        JTextField editor = (JTextField) comboItem.getEditor().getEditorComponent();
+        KeyListener[] listeners = editor.getKeyListeners();
+        for (KeyListener listener : listeners) {
+            editor.removeKeyListener(listener);
+        }
+
+        try {
+            comboItem.hidePopup();
+            comboItem.removeAllItems();
+            comboItem.addItem(""); // Empty first item
+
+            for (int i = 0; i < itemCount; i++) {
+                comboItem.addItem(data[i]);
+            }
+
+            comboItem.setSelectedItem("");
+
+        } finally {
+            for (KeyListener listener : listeners) {
+                editor.addKeyListener(listener);
+            }
+        }
+    }
 }

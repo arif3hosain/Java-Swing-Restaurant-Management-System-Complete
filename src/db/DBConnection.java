@@ -5,9 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DBConnection {
-    private final String url = "jdbc:postgresql://localhost:5433/rms";
+    private final String url = "jdbc:postgresql://localhost:5433/mensworld_db";
     private final String user = "postgres";
-    private final String password = "postgres";
+    private final String password = "mensworld25";
 
     public Connection mkDataBase() {
         Connection c = null;
