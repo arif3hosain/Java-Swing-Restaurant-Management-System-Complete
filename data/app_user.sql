@@ -1,0 +1,2 @@
+INSERT INTO public.app_user (id, username, password, mobile, full_name, is_active, created_at, role_id) VALUES (3, 'samim', '123456', '01780987896', 'Shamim Hossain', true, '2025-08-01 22:28:02.000000', 2);
+INSERT INTO public.app_user (id, username, password, mobile, full_name, is_active, created_at, role_id) VALUES (1, 'rms', '123456', '01879098789', 'Rakib Hossain', true, '2025-08-01 22:28:02.000000', 1);

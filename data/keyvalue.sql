@@ -1,0 +1,1 @@
+INSERT INTO public.keyvalue (id, report_path, logo, vat, discount, duration_count, subscription_from) VALUES (1, '/home/ahosain/Documents/personal/RMS/logo.png', '/home/ahosain/Documents/personal/RMS/logo.png', 10, 0, 'wCrV9e5Qt7PlZ3mpQmeVgA==', '');
