@@ -5,6 +5,7 @@ import com.rms.service.AppService;
 import com.rms.setting.Utils;
 import db.DBConnection;
 import dto.Item;
+import print.PrinterService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.rms.setting.Utils.getString;
+import static com.rms.setting.Utils.todayDateTime;
 
 public class GenerateBill extends JFrame {
 
@@ -475,28 +477,37 @@ public class GenerateBill extends JFrame {
 
         print.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              /* String fullText = "";
+               String fullText = "";
                orderedFoodList = new ArrayList<>();
                int tableRows = tbl.getRowCount();
                String line = "";
                String text = "";
 
-               line = Utils.TITLE;
-               String format = String.format("%-" + (47 - line.length()) / 2 + "s", text);
-               fullText += format + line + format+"\n";
-               line = "Hazirhat North Bazar";
-               String format2 = String.format("%-" + (47 - line.length()) / 2 + "s", text);
-               fullText += format2 + line + format2+"\n";
+                line = Utils.TITLE;
+                String format = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format + line + format+"\n";
 
-               line = "KamalNagar, Lakshmipur";
-                String format3 = String.format("%-" + (47 - line.length()) / 2 + "s", text);
-               fullText += format3 + line + format3+"\n\n";
+                line = "Signboard, Siddhirganj, Narayanganj";
+                String format2 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format2 + line + format2;
 
-               line = todayDateTime();
-               format3 = String.format("%-" + (47 - line.length()) / 2 + "s", text);
-               fullText += format3 + line + format3+"\n\n";
+                line = "Cell: 01600101001";
+                String format3 = "\n"+ String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format3 + line + format3+"\n";
 
-               fullText += "\n-----------------------------------------------\n";
+                line = todayDateTime();
+                String format4 =  String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format4 + line + format4+"\n";
+
+                line = "Invoice: 0125478563";
+                String format5 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format5 + line + format5+"\n";
+
+                line = "User : "+Utils.authority.username;
+                String format6 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText += format6 + line + format6+"\n";
+
+               fullText += "\n------------------------------------------\n";
                int products = 0;
                for(int i =0; i<tableRows; i++){
                    products ++;
@@ -506,35 +517,35 @@ public class GenerateBill extends JFrame {
                    fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i,4).toString());
                    fc.price = Double.parseDouble(tbl.getModel().getValueAt(i,5).toString());
                    long rate = Math.round(fc.price);
-                   line = fc.name+" ("+fc.quantity+")"+rate;
-                   line = fc.name+" ("+fc.quantity+")" + String.format("%-"+(47-line.length())+"s",text)+Math.round(rate)+"\n";
+                   line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")"+rate;
+                   line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")" + String.format("%-"+(42-line.length())+"s",text)+Math.round(rate)+"\n";
                    fullText += line;
                    line = "";
                }
                line = "";
-               fullText += "\n-----------------------------------------------\n";
+               fullText += "\n------------------------------------------\n";
                Double discount = getDoubleValue(txtDiscountAmt.getText());
                line = "Discount("+ getString(discountPercentage.getText())+")"+discount;
-               fullText += "Discount("+ getString(discountPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(discount)+"\n";
+               fullText += "Discount("+ getString(discountPercentage.getText())+")"+String.format("%-" + (42 - line.length()) + "s", text)+Math.round(discount)+"\n";
 
                Double vat = getDoubleValue(txtVATAmt.getText());
                line = "VAT("+ getString(vatPercentage.getText())+")"+vat;
-               fullText += "VAT("+ getString(vatPercentage.getText())+")"+String.format("%-" + (47 - line.length()) + "s", text)+Math.round(vat);
+               fullText += "VAT("+ getString(vatPercentage.getText())+")"+String.format("%-" + (42 - line.length()) + "s", text)+Math.round(vat);
 
-               fullText += "\n-----------------------------------------------\n";
+               fullText += "\n------------------------------------------\n";
                Double amount = getDoubleValue(txtAmt.getText());
-               line = "Total" +amount;
-               line =  "Total" + String.format("%-"+(47-line.length())+"s",text)+Math.round(amount);
+               line = "Total (Payment Method: "+payment.getSelectedItem()+")" +amount;
+               line =  "Total  (Payment Method: "+payment.getSelectedItem()+")" + String.format("%-"+(42-line.length())+"s",text)+Math.round(amount);
                fullText += line+"\n";
 
-               line = "Number of Item purchased: "+products;
-               format3 = String.format("%-" + (47 - line.length()) / 2 + "s", text);
+               line = "\nNumber of Item purchased: "+products+"\n\n";
+               format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                fullText += format3 + line + format3+"\n\n\n";
+//                System.out.println(fullText);
                PrinterService printerService = new PrinterService();
-               printerService.printString("58mm Series Printer(1)",fullText);
+               printerService.printString("SEWOO SLK-TS100",fullText);
                byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-               printerService.printBytes("58mm Series Printer(1)", cutP);
-*/
+               printerService.printBytes("SEWOO SLK-TS100", cutP);
                 saveTransaction();
                 JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
             }

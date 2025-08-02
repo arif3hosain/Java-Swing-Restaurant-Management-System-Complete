@@ -31,8 +31,8 @@ public class Utils {
 //    public static String resourcePath = "D:/ccl_resources";
     public static String LOGO_PATH = "";
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
-    public static String TITLE = "BANGLA BHOJ & BBQ";
-    public static String ICON_PATH = "/home/ahosain/Documents/personal/RMS/images/icon.png";
+    public static String TITLE = "BANGLA BHOJ & PARTY CENTER";
+    public static String ICON_PATH = "";
     public static Font FONT_15 = new Font("SansSerif", Font.PLAIN, 15);
     public static Font FONT_16 = new Font("SansSerif", Font.PLAIN, 16);
     public static String REPORT_PATH;
@@ -220,7 +220,7 @@ public class Utils {
     }
 
     public static String todayDateTime() {
-        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy HH:mm a");
+        SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy hh:mm a");
         return fmt.format(new Date());
     }
 
