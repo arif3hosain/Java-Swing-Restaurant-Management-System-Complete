@@ -29,7 +29,7 @@ public class Utils {
 //    public static String resourcePath = "/home/arifhosain/ccl_resources";
 //    public static String resourcePath = "/home/tomcat/ccl_resources";
 //    public static String resourcePath = "D:/ccl_resources";
-    public static String LOGO_PATH = "";
+    public static String LOGO_PATH = "/home/ahosain/Documents/personal/RMS/logo.png";
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
     public static String TITLE = "BANGLA BHOJ & PARTY CENTER";
     public static String ICON_PATH = "";

@@ -229,7 +229,7 @@ public class GenerateBill extends JFrame {
         center.add(comboSize);
 
         txtPrice.setBounds(160,140,200,30);
-        txtPrice.setEditable(false);
+       // txtPrice.setEditable(false);
         txtPrice.setFont(font);
         center.add(txtPrice);
         quantity.setBounds(160, 180, 50, 30);
@@ -550,12 +550,12 @@ public class GenerateBill extends JFrame {
                line = "\nNumber of Item purchased: "+products+"\n\n\n\n";
                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                fullText.append(format3).append(line).append(format3).append("\n\n\n");
-                System.out.println(fullText);
-//               PrinterService printerService = new PrinterService();
-//               printerService.printString("SEWOO SLK-TS100",fullText);
-//               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-//               printerService.printBytes("SEWOO SLK-TS100", cutP);
-//                saveTransaction();
+               // System.out.println(fullText);
+               PrinterService printerService = new PrinterService();
+               printerService.printString("SEWOO SLK-TS100",fullText.toString());
+               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
+               printerService.printBytes("SEWOO SLK-TS100", cutP);
+                saveTransaction();
                 JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
             }
         });
@@ -643,16 +643,15 @@ public class GenerateBill extends JFrame {
         });
 
         txtPrice.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!((c >= '0') && (c <= '9') ||
-                        (c == KeyEvent.VK_BACK_SPACE) ||
-                        (c == KeyEvent.VK_DELETE))) {
-                    getToolkit().beep();
-                    e.consume();
-                }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                Double price = Utils.getDoubleVal(txtPrice.getText());
+                Integer qty = quantity.getValue() == null ? 0 : (Integer) quantity.getValue();
+                Double result = price * qty;
+                txtTotal.setText(String.valueOf(result));
             }
         });
+
 
         catCombo.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
