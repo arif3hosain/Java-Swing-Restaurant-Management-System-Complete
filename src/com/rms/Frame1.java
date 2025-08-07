@@ -123,7 +123,7 @@ public class Frame1 {
 		passLabel.setForeground(Color.white);
 		rightPanel.add(passLabel);
 
-		id = new JTextField("");
+		id = new JTextField("samim");
 		id.setBounds(200, 145, 250, 35);
 		id.setFont(new Font(null, Font.PLAIN, 16));
 		id.setBorder(BorderFactory.createCompoundBorder(
@@ -132,7 +132,7 @@ public class Frame1 {
 		));
 		rightPanel.add(id);
 
-		pass = new JPasswordField("");
+		pass = new JPasswordField("123456");
 		pass.setBounds(200, 195, 250, 35);
 		pass.setFont(new Font(null, Font.PLAIN, 16));
 		pass.setBorder(BorderFactory.createCompoundBorder(

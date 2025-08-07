@@ -1,7 +1,5 @@
 package com.rms.setting;
 
-import com.rms.Frame2new;
-import com.rms.setting.Utils;
 import db.DBConnection;
 
 import javax.imageio.ImageIO;
@@ -132,26 +130,43 @@ public class Setting {
         setData();
     }
 
-    public void saveAll(){
+    public void saveAll() {
         String reportPath = Utils.getString(txtReportPath.getText());
         String logoPath = Utils.getString(txtLogoPath.getText());
         String vat = Utils.getString(txtVAT.getText());
         String discount = Utils.getString(txtDiscount.getText());
-            try {
-                pst = con.mkDataBase().prepareStatement("update keyvalue set report_path = ?, logo = ?, vat = ?, discount = ?,subscription_from = ?  Where id = 1 ");
-                pst.setString(1, reportPath);
-                pst.setString(2, logoPath);
-                pst.setDouble(3, vat.trim().length() > 0 ?  Double.parseDouble(vat) : 0);
-                pst.setDouble(4, discount.trim().length() > 0 ?  Double.parseDouble(discount) : 0);
-                pst.setString(5, key.getText());
-                pst.execute();
-                JOptionPane.showMessageDialog(null, "Data has been successfully updated.");
-                mainFrame.setVisible(false);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Please input correct data format!");
+
+        try {
+            pst = con.mkDataBase().prepareStatement(
+                    "UPDATE keyvalue SET report_path = ?, logo = ?, vat = ?, discount = ?, subscription_from = ? WHERE id = 1"
+            );
+            pst.setString(1, reportPath);
+            pst.setString(2, logoPath);
+            pst.setDouble(3, vat.trim().length() > 0 ? Double.parseDouble(vat) : 0);
+            pst.setDouble(4, discount.trim().length() > 0 ? Double.parseDouble(discount) : 0);
+            pst.setString(5, key.getText());
+
+            pst.execute();
+
+            int option = JOptionPane.showConfirmDialog(
+                    null,
+                    "Data has been successfully updated.\nDo you want to restart the application to apply changes?",
+                    "Restart Required",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (option == JOptionPane.YES_OPTION) {
+                System.exit(0); // Exit the application
+            } else {
+                mainFrame.setVisible(false); // Just close the window
             }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Please input correct data format!");
+        }
     }
+
 
     public void setData(){
         try{
@@ -165,7 +180,7 @@ public class Setting {
                 txtDiscount.setText(rs.getString("discount"));
             }
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, "set data 163");
+            JOptionPane.showMessageDialog(null, "Getting error when saving in setting, "+e.getMessage());
         }
 
     }

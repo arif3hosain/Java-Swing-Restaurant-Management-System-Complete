@@ -25,6 +25,7 @@ spring.log
 
 # Others
 *.swp
+bin/
 
 # properties files
 application-local.properties

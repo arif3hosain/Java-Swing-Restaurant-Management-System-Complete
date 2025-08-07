@@ -272,6 +272,7 @@ public class GenerateBill extends JFrame {
         discountPercentage = new JTextField(0);
         discountPercentage.setBounds(160,420,70,30);
         discountPercentage.setFont(font);
+        discountPercentage.setEditable(false);
         center.add(discountPercentage);
 
         txtDiscountAmt = new JTextField();
@@ -551,12 +552,15 @@ public class GenerateBill extends JFrame {
                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                fullText.append(format3).append(line).append(format3).append("\n\n\n");
                // System.out.println(fullText);
-               PrinterService printerService = new PrinterService();
-               printerService.printString("SEWOO SLK-TS100",fullText.toString());
-               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-               printerService.printBytes("SEWOO SLK-TS100", cutP);
-                saveTransaction();
-                JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
+//               PrinterService printerService = new PrinterService();
+//               printerService.printString("SEWOO SLK-TS100",fullText.toString());
+//               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
+//               printerService.printBytes("SEWOO SLK-TS100", cutP);
+                boolean result = saveTransaction();
+                if(result){
+                    JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
+                }
+                editor.requestFocusInWindow();
             }
         });
 
@@ -633,22 +637,14 @@ public class GenerateBill extends JFrame {
 
         quantity.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if(!txtPrice.getText().trim().equals("")){
-                    Double unitPrice = Double.parseDouble(txtPrice.getText());
-                    Integer qty = Integer.parseInt(((JSpinner)e.getSource()).getValue().toString());
-                    Double result = unitPrice * qty;
-                    txtTotal.setText(String.valueOf(result));
-                }
+                calculate();
             }
         });
 
         txtPrice.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                Double price = Utils.getDoubleVal(txtPrice.getText());
-                Integer qty = quantity.getValue() == null ? 0 : (Integer) quantity.getValue();
-                Double result = price * qty;
-                txtTotal.setText(String.valueOf(result));
+               calculate();
             }
         });
 
@@ -664,6 +660,12 @@ public class GenerateBill extends JFrame {
         });
     }
 
+    public void calculate(){
+        Double price = Utils.getDoubleVal(txtPrice.getText());
+        Integer qty = quantity.getValue() == null ? 0 : (Integer) quantity.getValue();
+        Double result = price * qty;
+        txtTotal.setText(String.valueOf(result));
+    }
 
     public void addSelectedItem(){
         try{
@@ -757,7 +759,7 @@ public class GenerateBill extends JFrame {
 
     public void showButtonDemo() {
         try{
-            pst = con.mkDataBase().prepareStatement("select distinct a.id itemId,a.item_name,a.price,a.quantity from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
+            pst = con.mkDataBase().prepareStatement("select distinct a.id itemId,a.item_name,a.price,a.quantity from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false  order by a.item_name");
             rs = pst.executeQuery();
             Item item = null;
             while(rs.next()){
@@ -850,13 +852,22 @@ public class GenerateBill extends JFrame {
 
         for (int i = 0; i < itemCount; i++) {
             String item = data[i].toString();
-            if (item.toLowerCase().contains(input.toLowerCase())) {
+            if (item.toLowerCase().contains(input.toLowerCase()) && !itemExistsInCombo(comboItem, item)) {
                 comboItem.addItem(item);
             }
         }
 
         comboItem.setSelectedItem(input); // reset editor text
         comboItem.showPopup(); // show dropdown again
+    }
+
+    private boolean itemExistsInCombo(JComboBox combo, String item) {
+        for (int i = 0; i < combo.getItemCount(); i++) {
+            if (combo.getItemAt(i).equals(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void loadItems(String cats,String txt){
@@ -883,7 +894,7 @@ public class GenerateBill extends JFrame {
             JOptionPane.showMessageDialog(null, "Load items error !");
         }
     }
-    public void saveTransaction(){
+    public boolean saveTransaction(){
         Double price = getDoubleValue(txtTotalAmt.getText());
         Double discount = getDoubleValue(txtDiscountAmt.getText());
         Double vat = getDoubleValue(txtVATAmt.getText());
@@ -926,17 +937,16 @@ public class GenerateBill extends JFrame {
 
                 }
                 saveBillDetails(primaryKey);
-//                JOptionPane.showMessageDialog(null, "Successfully Saved !" );
+                return true;
             }else{
                 JOptionPane.showMessageDialog(null, "Please add some food to cart! ");
+                return false;
             }
         }catch(Exception ex){
             JOptionPane.showMessageDialog(null, "Save transaction error " );
-        }finally{
-
         }
-
     payment.setSelectedItem(PaymentType.Cash.name());
+        return false;
     }
 
 

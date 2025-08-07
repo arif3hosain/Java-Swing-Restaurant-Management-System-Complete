@@ -72,7 +72,7 @@ public class AdvanceReport extends JFrame{
 
     private void setupComponents() {
         JPanel mainPanel = new JPanel(null);
-        mainPanel.setBackground(Color.orange);
+        mainPanel.setBackground(new Color(70, 130, 180));
         mainPanel.setBounds(0, 0, 800, 900);
 
         int yPos = 50; // Starting Y position
@@ -175,7 +175,7 @@ public class AdvanceReport extends JFrame{
                 reportService.exportByPaymentMethod(objectList);
             }
 
-            message.setText("PDF export completed successfully! Report: " + reportType);
+            message.setText("Report exported: " + reportType);
             JOptionPane.showMessageDialog(mainFrame, "Report exported to PDF successfully!\nReport Type: " + reportType);
 
         } catch (Exception ex) {
@@ -201,7 +201,7 @@ public class AdvanceReport extends JFrame{
             }
 
             // Populate items
-            List<Item> items = service.getItems();
+            List<Item> items = service.getUniqueItems();
             itemCombo.addItem("All");
             for (Item item : items) {
                 itemCombo.addItem(item.name);
