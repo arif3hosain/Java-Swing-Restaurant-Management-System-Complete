@@ -11,6 +11,8 @@ build/
 .idea/
 *.iml
 *.iws
+.settings
+
 out/
 
 # Logs
