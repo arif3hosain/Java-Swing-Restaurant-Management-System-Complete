@@ -111,6 +111,256 @@ public class AppService {
         return items;
     }
 
+    public List<Item> getUniqueItems() {
+        List<Item> items = new ArrayList();
+        Item item = null;
+        try {
+            pst = con.mkDataBase().prepareStatement("select distinct item_name from item where deleted = false order by item_name");
+            rs = pst.executeQuery();
+            int i = 1;
+            while (rs.next()) {
+                item = new Item();
+                item.name = rs.getString("item_name");
+                items.add(item);
+                i++;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        return items;
+    }
+
+
+    public List<Map<String, Object>> getSummaryByPaymentMethod(
+            String cat,           // e.g., "Beef" or "All"
+            String itemName,      // e.g., "Beef Kolija" or "All"/""
+            String paymentMethod, // e.g., "CASH" or "All"/""
+            boolean includeDiscount,
+            boolean includeVAT
+    ) {
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT\n" +
+                        "    b.payment_method,\n" +
+                        "    ROUND(SUM(b.amount), 2) AS customerBill\n" +
+                        "FROM category c\n" +
+                        "         JOIN item i\n" +
+                        "              ON c.id = i.cat_id\n" +
+                        "         JOIN bill_details dtl\n" +
+                        "              ON i.id = dtl.item_id\n" +
+                        "         JOIN bill b\n" +
+                        "              ON b.id = dtl.bill_id\n" +
+                        " where 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        // Filters (treat null/empty/"All" as no filter)
+        if (cat != null && !cat.trim().isEmpty() && !"All".equalsIgnoreCase(cat)) {
+            sql.append("AND c.name = ? ");
+            params.add(cat.trim());
+        }
+        if (itemName != null && !itemName.trim().isEmpty() && !"All".equalsIgnoreCase(itemName)) {
+            sql.append("AND i.item_name = ? ");
+            params.add(itemName.trim());
+        }
+        if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
+            sql.append("AND b.payment_method = ? ");
+            params.add(paymentMethod.trim());
+        }
+
+        // Discount/VAT include flags
+        if (!includeDiscount) {
+            sql.append("AND b.discount_amt = 0.00 ");
+        }
+        if (!includeVAT) {
+            sql.append("AND b.vat_amt = 0.00 ");
+        }
+
+        sql.append("GROUP BY  b.payment_method ORDER BY b.payment_method ");
+
+        try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
+            // bind parameters
+            for (int i = 0; i < params.size(); i++) {
+                pst.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("name", rs.getString("payment_method"));
+                    row.put("amount", rs.getInt("customerBill")); // rounded in SQL
+                    rows.add(row);
+                }
+            }
+        } catch (Exception e) {
+            //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading summary by payment method: " + e.getMessage());
+        }
+
+        return rows;
+    }
+
+
+
+    public List<Map<String, Object>> getSummaryByItem(
+            String cat,           // e.g., "Beef" or "All"
+            String itemName,      // e.g., "Beef Kolija" or "All"/""
+            String paymentMethod, // e.g., "CASH" or "All"/""
+            boolean includeDiscount,
+            boolean includeVAT
+    ) {
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT\n" +
+                        "    i.item_name,\n" +
+                        "    i.quantity,\n" +
+                        "    ROUND(SUM(b.amount), 2) AS customerBill,\n" +
+                        "    ROUND(SUM(discount_amt), 2) AS discount,\n" +
+                        "    ROUND(SUM(vat_amt), 2) AS vat,\n" +
+                        "    ROUND(SUM(total), 2) AS paid\n" +
+                        "FROM category c\n" +
+                        "         JOIN item i\n" +
+                        "              ON c.id = i.cat_id\n" +
+                        "         JOIN bill_details dtl\n" +
+                        "              ON i.id = dtl.item_id\n" +
+                        "         JOIN bill b\n" +
+                        "              ON b.id = dtl.bill_id\n" +
+                        " where 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        // Filters (treat null/empty/"All" as no filter)
+        if (cat != null && !cat.trim().isEmpty() && !"All".equalsIgnoreCase(cat)) {
+            sql.append("AND c.name = ? ");
+            params.add(cat.trim());
+        }
+        if (itemName != null && !itemName.trim().isEmpty() && !"All".equalsIgnoreCase(itemName)) {
+            sql.append("AND i.item_name = ? ");
+            params.add(itemName.trim());
+        }
+        if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
+            sql.append("AND b.payment_method = ? ");
+            params.add(paymentMethod.trim());
+        }
+
+        // Discount/VAT include flags
+        if (!includeDiscount) {
+            sql.append("AND b.discount_amt = 0.00 ");
+        }
+        if (!includeVAT) {
+            sql.append("AND b.vat_amt = 0.00 ");
+        }
+
+        sql.append("GROUP BY  i.item_name, i.quantity ");
+        sql.append("ORDER BY i.item_name");
+
+        try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
+            // bind parameters
+            for (int i = 0; i < params.size(); i++) {
+                pst.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("name", rs.getString("item_name"));
+                    row.put("quantity", rs.getString("quantity"));
+                    row.put("customerBill", rs.getInt("customerBill")); // rounded in SQL
+                    row.put("discount", rs.getInt("discount"));
+                    row.put("vat", rs.getInt("vat"));
+                    row.put("paid", rs.getInt("paid"));
+                    rows.add(row);
+                }
+            }
+        } catch (Exception e) {
+            //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading summary by item: " + e.getMessage());
+        }
+
+        return rows;
+    }
+
+    public List<Map<String, Object>> getSummaryByCategory(
+
+            String cat,           // e.g., "Beef" or "All"
+            String itemName,      // e.g., "Beef Kolija" or "All"/""
+            String paymentMethod, // e.g., "CASH" or "All"/""
+            boolean includeDiscount,
+            boolean includeVAT
+    ) {
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT c.id, c.name, " +
+                        "       ROUND(SUM(b.amount), 2)       AS customerBill, " +
+                        "       ROUND(SUM(b.discount_amt), 2) AS discount, " +
+                        "       ROUND(SUM(b.vat_amt), 2)      AS vat, " +
+                        "       ROUND(SUM(b.total), 2)        AS paid " +
+                        "FROM category c " +
+                        "JOIN item i         ON c.id = i.cat_id " +
+                        "JOIN bill_details d ON i.id = d.item_id " +
+                        "JOIN bill b         ON b.id = d.bill_id " +
+                        "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        // Filters (treat null/empty/"All" as no filter)
+        if (cat != null && !cat.trim().isEmpty() && !"All".equalsIgnoreCase(cat)) {
+            sql.append("AND c.name = ? ");
+            params.add(cat.trim());
+        }
+        if (itemName != null && !itemName.trim().isEmpty() && !"All".equalsIgnoreCase(itemName)) {
+            sql.append("AND i.item_name = ? ");
+            params.add(itemName.trim());
+        }
+        if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
+            sql.append("AND b.payment_method = ? ");
+            params.add(paymentMethod.trim());
+        }
+
+        // Discount/VAT include flags
+        if (!includeDiscount) {
+            sql.append("AND b.discount_amt = 0.00 ");
+        }
+        if (!includeVAT) {
+            sql.append("AND b.vat_amt = 0.00 ");
+        }
+
+        sql.append("GROUP BY c.id, c.name ");
+        sql.append("ORDER BY c.name");
+
+        try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
+            // bind parameters
+            for (int i = 0; i < params.size(); i++) {
+                pst.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getLong("id"));
+                    row.put("name", rs.getString("name"));
+                    row.put("customerBill", rs.getInt("customerBill")); // rounded in SQL
+                    row.put("discount", rs.getInt("discount"));
+                    row.put("vat", rs.getInt("vat"));
+                    row.put("paid", rs.getInt("paid"));
+                    rows.add(row);
+                }
+            }
+        } catch (Exception e) {
+           // e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error loading summary by category: " + e.getMessage());
+        }
+
+        return rows;
+    }
+
+
 
     public List<Map<String, Object>> getBillDetails(String cat, String item, String method, boolean includeDiscount, boolean includeVAT) {
         List<Map<String, Object>> billDetails = new ArrayList<>();

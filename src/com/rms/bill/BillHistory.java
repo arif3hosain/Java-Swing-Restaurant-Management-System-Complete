@@ -167,60 +167,7 @@ public class BillHistory extends JFrame{
     }
 
 
-    public void exportPDF(String fromDate,String toDate)  {
-        message.setText(0 +" Transactions have been found!");
-        String sql = "";
-        if(fromDate != null || toDate != null) {
-            sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
-        }else{
-            sql = "select * from bill order by id desc ";
-        }
-        try {
-            pst = con.mkDataBase().prepareStatement(sql);
-            rs = pst.executeQuery();
-            int i = 0;
-            int row = 0;
-            String[] fields = new String[]{"created_date", "description", "vat_amt", "discount_amt", "total","amount"};
-            List inList = new ArrayList();
-            Map map = new HashMap();
-            map.put("logo","/home/ahosain/Documents/personal/RMS/logo.png");
 
-            while (rs.next()) {
-                row ++;
-                Date billingTime = rs.getTimestamp("created_date");
-                String description = "";
-                Double vat = rs.getDouble("vat_amt");
-                Double discount = rs.getDouble("discount_amt");
-                Double totalBill = rs.getDouble("total");
-                Double foodBill = rs.getDouble("amount");
-                inList.add(new Object[]{billingTime,description, vat, discount, totalBill, foodBill});
-            }//rs.next();
-            if(row > 0) {
-                JasperPrint jasperPrint = null;
-                InputStream jasperStream = null;
-                jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
-//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
-                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
-                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_PATH +"(" + fromDate + ") - (" + toDate + ").PDF");
-                message.setText(row + " Transactions have been exported!");
-            }else{
-                message.setText("No data found to export!");
-            }
-        } catch (SQLException e) {
-            //e.printStackTrace();
-            message.setText("Please input valid date format !");
-            // //e.printStackTrace();
-            //message.setText("Input correct date format - DD/MM/YYYY");
-        } catch ( JRException e) {
-            e.printStackTrace();
-            message.setText("Warning when exporting report");
-            JOptionPane.showMessageDialog(null, "Warning when exporting report");
-        }catch ( IOException e) {
-            //e.printStackTrace();
-            message.setText("Please input date with correct format (e.g. 20-06-2021");
-            JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
-        }
-    }
 
 
     public void searchHistory(){
@@ -234,7 +181,7 @@ public class BillHistory extends JFrame{
         dtm.setRowCount(0);
         String inputFrom = fromDate.getText();
         String inputTo = toDate.getText();
-        exportPDF(inputFrom,inputTo);
+      //  exportPDF(inputFrom,inputTo);
     }
 
 

@@ -40,8 +40,6 @@ public class ReportBuilder extends JFrame{
     JComboBox<String> itemCombo = new JComboBox<>();
     JComboBox<String> paymentCombo = new JComboBox<>(new String[]{"All", "Cash", "MFS", "Credit"});
 
-
-
     JLabel message = new JLabel("...");
 
 
@@ -109,7 +107,7 @@ public class ReportBuilder extends JFrame{
         });
         btnExportPDF.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //dataPass();
+                new AdvanceReport();
             }
         });
 
@@ -117,7 +115,6 @@ public class ReportBuilder extends JFrame{
         dtm = new DefaultTableModel(0, 0){
             @Override
             public boolean isCellEditable(int row, int column) {
-                //all cells false
                 return false;
             }
         };

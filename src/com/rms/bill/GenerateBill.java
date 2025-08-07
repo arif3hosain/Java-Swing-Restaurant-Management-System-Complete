@@ -551,10 +551,10 @@ public class GenerateBill extends JFrame {
                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                fullText.append(format3).append(line).append(format3).append("\n\n\n");
                // System.out.println(fullText);
-               PrinterService printerService = new PrinterService();
-               printerService.printString("SEWOO SLK-TS100",fullText.toString());
-               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-               printerService.printBytes("SEWOO SLK-TS100", cutP);
+//               PrinterService printerService = new PrinterService();
+//               printerService.printString("SEWOO SLK-TS100",fullText.toString());
+//               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
+//               printerService.printBytes("SEWOO SLK-TS100", cutP);
                 saveTransaction();
                 JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
             }
@@ -757,7 +757,7 @@ public class GenerateBill extends JFrame {
 
     public void showButtonDemo() {
         try{
-            pst = con.mkDataBase().prepareStatement("select distinct a.item_name,a.price,a.quantity from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
+            pst = con.mkDataBase().prepareStatement("select distinct a.id itemId,a.item_name,a.price,a.quantity from item a join category b on b.id = a.cat_id where a.deleted = false and b.deleted = false ");
             rs = pst.executeQuery();
             Item item = null;
             while(rs.next()){
@@ -765,6 +765,7 @@ public class GenerateBill extends JFrame {
                 data[itemCount] = rs.getString("item_name");
 
                 item = new Item();
+                item.id = rs.getInt("itemId");
                 item.name =  rs.getString("item_name");
                 item.price = rs.getDouble("price");
                 item.quantity = rs.getString("quantity");
@@ -778,7 +779,14 @@ public class GenerateBill extends JFrame {
         }
     }
 
-
+    public Integer getItemId(String itemName, String unit){
+        for(int i=0;i<itemList.size();i++){
+            if(itemList.get(i).name.equals(itemName) && itemList.get(i).quantity.equals(unit) ){
+                return itemList.get(i).id;
+            }
+        }
+        return 0;
+    }
     public void setItemSize(String foodName){
         comboSize.removeAllItems();
         ArrayList<String> list = new ArrayList();
@@ -799,16 +807,18 @@ public class GenerateBill extends JFrame {
     public void saveBillDetails(int primaryKey){
         for(foodCart f: orderedFoodList){
             try{
-                pst = con.mkDataBase().prepareStatement("insert into  bill_details(food,size,quantity,per_unit_price,total_price,bill_id)" +
-                        " values (?,?,?,?,?,?)");
+                pst = con.mkDataBase().prepareStatement("insert into  bill_details(food,size,quantity,per_unit_price,total_price,bill_id, item_id)" +
+                        " values (?,?,?,?,?,?,?)");
                 pst.setString(1, f.name);
                 pst.setString(2, f.size);
                 pst.setInt(3, f.quantity);
                 pst.setDouble(4, f.unitPrice);
                 pst.setDouble(5, f.price);
                 pst.setDouble(6, primaryKey);
+                pst.setInt(7, getItemId(f.name, f.size));
                 pst.execute();
             }catch(Exception ex){
+                ex.printStackTrace();
             }finally{
 
             }

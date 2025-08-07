@@ -3,6 +3,7 @@ package com.rms.service;
 import com.rms.DataSource;
 import com.rms.setting.Utils;
 import db.DBConnection;
+import dto.JasperFileName;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -22,6 +23,108 @@ public class ReportService {
     ResultSet rs;
     PreparedStatement pst;
     DBConnection con = new DBConnection();
+
+
+
+    public void exportByItem(List<Map<String, Object>> data){
+        try {
+            String[] fields = new String[]{"serial","itemName","quantity", "amount", "discount", "vat", "billedAmount"};
+            List inList = new ArrayList();
+            Map map = new HashMap();
+            map.put("logo",Utils.LOGO_PATH);
+            map.put("printedBy",Utils.authority.username);
+             int i =0;
+             for(Map<String, Object> obj : data){
+                 i++;
+                 String categoryName = Utils.getString(obj.get("name"));
+                 String quantity = Utils.getString(obj.get("quantity"));
+                 Integer amount = Utils.getNumberValue(obj.get("customerBill"));
+                 Integer discount = Utils.getNumberValue(obj.get("discount"));
+                 Integer vat = Utils.getNumberValue(obj.get("vat"));
+                 Integer billedAmount = Utils.getNumberValue(obj.get("paid"));
+                 inList.add(new Object[]{i,categoryName,quantity, amount, discount, vat, billedAmount});
+            }
+                JasperPrint jasperPrint = null;
+                InputStream jasperStream = null;
+                jasperStream = new FileInputStream(new File(Utils.JASPER_PATH + JasperFileName.ITEM_WISE_SALES_REPORT));
+//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
+                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH+"Item Wise Sales Report "+Math.random()+".PDF");
+
+        } catch (JRException e) {
+           // e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Warning when exporting report");
+
+        }catch ( IOException e) {
+           // e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
+
+        }
+    }
+    public void exportByPaymentMethod(List<Map<String, Object>> data){
+        try {
+            String[] fields = new String[]{"name", "amount"};
+            List inList = new ArrayList();
+            Map map = new HashMap();
+            map.put("logo",Utils.LOGO_PATH);
+            map.put("printedBy",Utils.authority.username);
+             for(Map<String, Object> obj : data){
+                 String name = Utils.getString(obj.get("name"));
+                 Integer amount = Utils.getNumberValue(obj.get("amount"));
+                 inList.add(new Object[]{name, amount});
+            }
+                JasperPrint jasperPrint = null;
+                InputStream jasperStream = null;
+                jasperStream = new FileInputStream(new File(Utils.JASPER_PATH + JasperFileName.PAYMENT_METHOD_WISE_SALES_REPORT));
+//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
+                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH +"Sales Report by Payment Method "+Math.random()+".PDF");
+
+        } catch (JRException e) {
+          //  e.printStackTrace();
+           JOptionPane.showMessageDialog(null, "Warning when exporting report");
+
+        }catch ( IOException e) {
+           // e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
+
+        }
+    }
+
+    public void exportByCategory(List<Map<String, Object>> data){
+        try {
+            String[] fields = new String[]{"serial","categoryName", "amount", "discount", "vat", "billedAmount"};
+            List inList = new ArrayList();
+            Map map = new HashMap();
+            map.put("logo",Utils.LOGO_PATH);
+            map.put("printedBy",Utils.authority.username);
+             int i =0;
+             for(Map<String, Object> obj : data){
+                 i++;
+                 String categoryName = Utils.getString(obj.get("name"));
+                 Integer amount = Utils.getNumberValue(obj.get("customerBill"));
+                 Integer discount = Utils.getNumberValue(obj.get("discount"));
+                 Integer vat = Utils.getNumberValue(obj.get("vat"));
+                 Integer billedAmount = Utils.getNumberValue(obj.get("paid"));
+                 inList.add(new Object[]{i,categoryName, amount, discount, vat, billedAmount});
+            }
+                JasperPrint jasperPrint = null;
+                InputStream jasperStream = null;
+                jasperStream = new FileInputStream(new File(Utils.JASPER_PATH + JasperFileName.CATEGORY_WISE_SALES_REPORT));
+//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
+                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH + "Category Wise Sales Report "+Math.random()+".PDF");
+
+        } catch (JRException e) {
+            e.printStackTrace();
+          //  JOptionPane.showMessageDialog(null, "Warning when exporting report");
+
+        }catch ( IOException e) {
+            e.printStackTrace();
+          //  JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
+
+        }
+    }
 
 
     public String  exportPDF(String fromDate,String toDate)  {
@@ -57,7 +160,7 @@ public class ReportService {
                 jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
 //            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
                 jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
-                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_PATH +"(" + fromDate + ") - (" + toDate + ").PDF");
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH +"(" + fromDate + ") - (" + toDate + ").PDF");
                 return " Transactions have been exported!";
             }else{
               return "No data found to export!";

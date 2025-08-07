@@ -1,4 +1,5 @@
 package com.rms;
+import com.rms.bill.AdvanceReport;
 import com.rms.bill.BillHistory;
 import com.rms.bill.GenerateBill;
 import com.rms.category.CategoryView;
@@ -35,6 +36,7 @@ public class Frame2new {
     JButton btnCategory = new JButton("Category");
     JButton billHistory = new JButton("Bill History");
     JButton setting = new JButton("Setting");
+    JButton reports = new JButton("Reports");
 
     public static Integer fromID;
     public static Integer storedDays;
@@ -125,12 +127,19 @@ public class Frame2new {
             set.showButtonDemo();
          }
 });
+
+       reports.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+           new AdvanceReport();
+         }
+});
       if(Utils.authority.role.equals(Role.ADMIN)) {
           controlPanel.add(btnItem);
           controlPanel.add(btnCategory);
           controlPanel.add(btnBill);
           controlPanel.add(billHistory);
           controlPanel.add(setting);
+          controlPanel.add(reports);
       } if(Utils.authority.role.equals(Role.USER)) {
            controlPanel.add(btnBill);
            btnBill.setPreferredSize(new Dimension(300, 40));
@@ -156,7 +165,7 @@ public class Frame2new {
             String stored_days = null;
             String from_id = null;
             while(rs.next()){
-                Utils.REPORT_PATH = rs.getString("report_path");
+                Utils.REPORT_EXPORT_PATH = rs.getString("report_path");
                 Utils.VAT = rs.getString("vat");
                 Utils.DISCOUNT = rs.getString("discount");
                 Utils.LOGO_PATH = rs.getString("logo");
