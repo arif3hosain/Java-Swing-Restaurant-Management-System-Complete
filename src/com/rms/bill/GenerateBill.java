@@ -551,10 +551,10 @@ public class GenerateBill extends JFrame {
                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                fullText.append(format3).append(line).append(format3).append("\n\n\n");
                // System.out.println(fullText);
-//               PrinterService printerService = new PrinterService();
-//               printerService.printString("SEWOO SLK-TS100",fullText.toString());
-//               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-//               printerService.printBytes("SEWOO SLK-TS100", cutP);
+               PrinterService printerService = new PrinterService();
+               printerService.printString("SEWOO SLK-TS100",fullText.toString());
+               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
+               printerService.printBytes("SEWOO SLK-TS100", cutP);
                 saveTransaction();
                 JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
             }

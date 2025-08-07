@@ -69,7 +69,7 @@ public class BillHistory extends JFrame{
         btnSearch.setBounds(590,50,80,35);
         top.add(btnSearch);
         btnExportPDF.setBounds(680,50,100,35);
-        top.add(btnExportPDF);
+      //  top.add(btnExportPDF);
         btnAdvanceReport.setBounds(790,50,120,35);
         top.add(btnAdvanceReport);
         message.setBounds(950,50,300,25);
