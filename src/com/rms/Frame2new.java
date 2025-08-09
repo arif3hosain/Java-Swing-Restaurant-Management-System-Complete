@@ -142,11 +142,14 @@ public class Frame2new {
           controlPanel.add(reports);
       } if(Utils.authority.role.equals(Role.USER)) {
            controlPanel.add(btnBill);
-           btnBill.setPreferredSize(new Dimension(300, 40));
-           JPanel wrapper = new JPanel();
-           wrapper.setOpaque(false); // Make background transparent to match layout
-           wrapper.add(btnBill);
-           controlPanel.add(wrapper);
+           controlPanel.add(billHistory);
+           controlPanel.add(reports);
+//           controlPanel.add(btnBill);
+//           btnBill.setPreferredSize(new Dimension(300, 40));
+//           JPanel wrapper = new JPanel();
+//           wrapper.setOpaque(false); // Make background transparent to match layout
+//           wrapper.add(btnBill);
+//           controlPanel.add(wrapper);
        }
        mainFrame.setLocationRelativeTo(null);
        mainFrame.setVisible(true);

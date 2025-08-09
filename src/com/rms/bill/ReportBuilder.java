@@ -35,7 +35,6 @@ public class ReportBuilder extends JFrame{
     JCheckBox chkDiscount = new JCheckBox();
     JCheckBox chkVAT = new JCheckBox();
     JButton btnSearch = new JButton("Search");
-    JButton btnExportPDF = new JButton("Export PDF");
     JComboBox<String> categoryCombo = new JComboBox<>();
     JComboBox<String> itemCombo = new JComboBox<>();
     JComboBox<String> paymentCombo = new JComboBox<>(new String[]{"All", "Cash", "MFS", "Credit"});
@@ -89,11 +88,6 @@ public class ReportBuilder extends JFrame{
 
         btnSearch.setBounds(1070, 50, 80, 35);
         top.add(btnSearch);
-
-        btnExportPDF.setBounds(1160, 50, 120, 35);
-        top.add(btnExportPDF);
-
-
         JPanel bottom = new JPanel(null);
         bottom.setBounds(0,100,1500,800);
 
@@ -103,11 +97,6 @@ public class ReportBuilder extends JFrame{
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 searchHistory();
-            }
-        });
-        btnExportPDF.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                new AdvanceReport();
             }
         });
 
@@ -139,7 +128,6 @@ public class ReportBuilder extends JFrame{
         mainFrame.add(top);
         mainFrame.add(bottom);
         if(!Frame2new.allow){
-            btnExportPDF.setVisible(false);
             btnSearch.setVisible(false);
             message.setBounds(590,55,400,25);
             message.setText("Billing period expired, contact Administrator at 01754282387");

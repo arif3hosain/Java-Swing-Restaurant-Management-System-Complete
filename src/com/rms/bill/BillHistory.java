@@ -34,7 +34,7 @@ public class BillHistory extends JFrame{
 
     JButton btnSearch = new JButton("Search");
     JButton btnExportPDF = new JButton("Export PDF");
-    JButton btnAdvanceReport = new JButton("Advance Report");
+    JButton btnAdvanceReport = new JButton("Advance Search");
     JTextField fromDate = new JTextField("");
     JTextField toDate = new JTextField("");
     JLabel message = new JLabel("5 transactions have been found!");
