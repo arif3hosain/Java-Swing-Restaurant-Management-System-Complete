@@ -1,5 +1,5 @@
 package com.rms;
-import com.rms.bill.AdvanceReport;
+import com.rms.bill.ReportBuilder;
 import com.rms.bill.BillHistory;
 import com.rms.bill.GenerateBill;
 import com.rms.category.CategoryView;
@@ -108,7 +108,7 @@ public class Frame2new {
          }
 });
 
-		
+
         btnBill.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
             GenerateBill gb=new GenerateBill();
@@ -117,6 +117,7 @@ public class Frame2new {
 
         billHistory.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
+            // new AutoSearch();
          new BillHistory();
          }
 });
@@ -130,7 +131,7 @@ public class Frame2new {
 
        reports.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-           new AdvanceReport();
+           new ReportBuilder();
          }
 });
       if(Utils.authority.role.equals(Role.ADMIN)) {

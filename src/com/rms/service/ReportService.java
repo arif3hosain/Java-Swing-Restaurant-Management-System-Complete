@@ -130,9 +130,9 @@ public class ReportService {
     public String  exportPDF(String fromDate,String toDate)  {
         String sql = "";
         if(fromDate != null || toDate != null) {
-            sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' order by id desc";
+            sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' where  delete = false order by id desc";
         }else{
-            sql = "select * from bill order by id desc ";
+            sql = "select * from bill where  delete = false order by id desc ";
         }
         try {
             pst = con.mkDataBase().prepareStatement(sql);

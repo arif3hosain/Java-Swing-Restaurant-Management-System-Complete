@@ -229,10 +229,10 @@ public class GenerateBill extends JFrame {
         center.add(comboSize);
 
         txtPrice.setBounds(160,140,200,30);
-       // txtPrice.setEditable(false);
+        txtPrice.setEditable(false);
         txtPrice.setFont(font);
         center.add(txtPrice);
-        quantity.setBounds(160, 180, 50, 30);
+        quantity.setBounds(160, 180, 100, 30);
         quantity.setFont(font);
         center.add(quantity);
         txtTotal.setBounds(160,220,200,30);
@@ -478,11 +478,13 @@ public class GenerateBill extends JFrame {
 
         print.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               StringBuilder fullText = new StringBuilder();
-               orderedFoodList = new ArrayList<>();
-               int tableRows = tbl.getRowCount();
-               String line = "";
-               String text = "";
+                Integer invoiceNo = saveTransaction();
+                if(invoiceNo != null){
+                StringBuilder fullText = new StringBuilder();
+                orderedFoodList = new ArrayList<>();
+                int tableRows = tbl.getRowCount();
+                String line = "";
+                String text = "";
 
                 line = Utils.TITLE;
                 String format = String.format("%-" + (42 - line.length()) / 2 + "s", text);
@@ -493,74 +495,90 @@ public class GenerateBill extends JFrame {
                 fullText.append(format2).append(line).append(format2);
 
                 line = "Cell: 01600101001";
-                String format3 = "\n"+ String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                String format3 = "\n" + String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format3).append(line).append(format3).append("\n");
 
                 line = todayDateTime();
-                String format4 =  String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                String format4 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format4).append(line).append(format4).append("\n");
 
-                line = "Invoice: 0125478563";
+                line = "Invoice: "+invoiceNo;
                 String format5 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format5).append(line).append(format5).append("\n");
 
-                line = "User : "+Utils.authority.username;
+                line = "User : " + Utils.authority.username;
                 String format6 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format6).append(line).append(format6).append("\n\n");
 
 
                 line = "Item";
                 fullText.append("Item")
-                       .append(String.format("%-" + (42 - 22) + "s", text)).append("Qty X Rate")
-                       .append(String.format("%-" + (42 - 39) + "s", text)).append("Price")
+                        .append(String.format("%-" + (42 - 22) + "s", text)).append("Qty X Rate")
+                        .append(String.format("%-" + (42 - 39) + "s", text)).append("Price")
                         .append("\n");
 
 //                fullText.append(headerLine).append("\n");
                 fullText.append("==========================================\n");
-               int products = 0;
-               for(int i =0; i<tableRows; i++){
-                   products ++;
-                   foodCart fc = new foodCart();
-                   fc.name = getString(tbl.getModel().getValueAt(i,1));
-                   fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i,3).toString());
-                   fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i,4).toString());
-                   fc.price = Double.parseDouble(tbl.getModel().getValueAt(i,5).toString());
-                   long rate = Math.round(fc.price);
-                   line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")"+rate;
-                   line = fc.name+" ("+fc.quantity+"x"+Math.round(fc.unitPrice)+")" + String.format("%-"+(42-line.length())+"s",text)+Math.round(rate)+"\n";
-                   fullText.append(line);
-                   line = "";
-               }
-               line = "";
-               fullText.append("\n------------------------------------------\n");
-               Double discount = getDoubleValue(txtDiscountAmt.getText());
-               line = "Discount("+ getString(discountPercentage.getText())+")"+discount;
-               fullText.append("Discount(").append(getString(discountPercentage.getText())).append(")").append(String.format("%-" + (44 - line.length()) + "s", text)).append(Math.round(discount)).append("\n");
+                int products = 0;
+                for (int i = 0; i < tableRows; i++) {
+                    products++;
+                    foodCart fc = new foodCart();
+                    fc.name = getString(tbl.getModel().getValueAt(i, 1));
+                    fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i, 3).toString());
+                    fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i, 4).toString());
+                    fc.price = Double.parseDouble(tbl.getModel().getValueAt(i, 5).toString());
+                    long rate = Math.round(fc.price);
+                    line = fc.name + " (" + fc.quantity + "x" + Math.round(fc.unitPrice) + ")" + rate;
+                    line = fc.name + " (" + fc.quantity + "x" + Math.round(fc.unitPrice) + ")" + String.format("%-" + (42 - line.length()) + "s", text) + Math.round(rate) + "\n";
+                    fullText.append(line);
+                    line = "";
+                }
+                line = "";
+                fullText.append("\n------------------------------------------\n");
+                Double discount = getDoubleValue(txtDiscountAmt.getText());
+                line = "Discount(" + getString(discountPercentage.getText()) + "%)" + "(-) "+discount;
+                fullText.append("Discount(").append(getString(discountPercentage.getText())).append("%)").append(String.format("%-" + (44 - line.length()) + "s", text)).append("(-) ").append(Math.round(discount)).append("\n");
 
-               Double vat = getDoubleValue(txtVATAmt.getText());
-               line = "VAT("+ getString(vatPercentage.getText())+")"+vat;
-               fullText.append("VAT(").append(getString(vatPercentage.getText())).append(")").append(String.format("%-" + (44 - line.length()) + "s", text)).append(Math.round(vat));
+                Double vat = getDoubleValue(txtVATAmt.getText());
+                line = "VAT(" + getString(vatPercentage.getText()) + "%)" + "(+) "+vat;
+                fullText.append("VAT(").append(getString(vatPercentage.getText())).append("%)").append(String.format("%-" + (44 - line.length()) + "s", text)).append("(+) ").append(Math.round(vat));
 
-               fullText.append("\n------------------------------------------\n");
-               Double amount = getDoubleValue(txtAmt.getText());
-               line = "Grand Total (Payment Method: "+payment.getSelectedItem()+")" +amount;
-               line =  "Grand Total (Payment Method: "+payment.getSelectedItem()+")" + String.format("%-"+(44-line.length())+"s",text)+Math.round(amount);
-               fullText.append(line).append("\n");
+                fullText.append("\n------------------------------------------\n");
+                Double amount = getDoubleValue(txtAmt.getText());
+                line = "Grand Total (Payment Method: " + payment.getSelectedItem() + ")" + amount;
+                line = "Grand Total (Payment Method: " + payment.getSelectedItem() + ")" + String.format("%-" + (44 - line.length()) + "s", text) + Math.round(amount);
+                fullText.append(line).append("\n");
                 fullText.append("==========================================\n\n");
 
-               line = "\nNumber of Item purchased: "+products+"\n\n\n\n";
-               format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-               fullText.append(format3).append(line).append(format3).append("\n\n\n");
-               // System.out.println(fullText);
-               PrinterService printerService = new PrinterService();
-               printerService.printString("SEWOO SLK-TS100",fullText.toString());
-               byte[] cutP = new byte[] { 0x1d, 'V', 1 };
-               printerService.printBytes("SEWOO SLK-TS100", cutP);
-                boolean result = saveTransaction();
-                if(result){
+                line = "Number of Item purchased: " + products + "\n";
+                format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText.append(format3).append(line).append(format3).append("\n");
+
+                line = "Powered By: www.facebook.com/easybilling";
+                String format7 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText.append(format7).append(line).append(format7).append("\n");
+
+                line = "Contact at 01754282387";
+                String format8 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText.append(format8).append(line).append(format8).append("\n");
+
+                line = "System generated, no sign required.";
+                String format9 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+                fullText.append(format9).append(line).append(format9).append("\n\n");
+
+
+                System.out.println(fullText);
+                PrinterService printerService = new PrinterService();
+//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+//                byte[] cutP = new byte[]{0x1d, 'V', 1};
+//                printerService.printBytes("SEWOO SLK-TS100", cutP);
+
+                if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
                 }
+                cleanTransaction();
                 editor.requestFocusInWindow();
+            }
             }
         });
 
@@ -825,8 +843,7 @@ public class GenerateBill extends JFrame {
 
             }
         }
-        dtm.setRowCount(0);
-        foodCartList = new ArrayList<>();
+
     }
 
     public void getCategory() {
@@ -894,59 +911,86 @@ public class GenerateBill extends JFrame {
             JOptionPane.showMessageDialog(null, "Load items error !");
         }
     }
-    public boolean saveTransaction(){
+
+
+
+
+    public Integer saveTransaction() {
         Double price = getDoubleValue(txtTotalAmt.getText());
         Double discount = getDoubleValue(txtDiscountAmt.getText());
         Double vat = getDoubleValue(txtVATAmt.getText());
         Double amount = getDoubleValue(txtAmt.getText());
-        try{
-            pst = con.mkDataBase().prepareStatement("insert into bill ( created_date, description, vat_amt, discount_amt, total,amount,payment_method,created_by) values (" +
-                    " CURRENT_TIMESTAMP,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-            //     pst.setDate(1, new java.sql.Date(new java.util.Date().getTime()));
+        Integer invoiceNo = null;
+        if (amount <= 0) {
+            JOptionPane.showMessageDialog(null, "Please add some food to cart!");
+            payment.setSelectedItem(PaymentType.Cash.name());
+            return null;
+        }
+        try {
+            // Insert into bill
+            pst = con.mkDataBase().prepareStatement(
+                    "INSERT INTO bill (created_date, description, vat_amt, discount_amt, total, amount, payment_method, created_by) " +
+                            "VALUES (CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
             pst.setString(1, "");
             pst.setDouble(2, vat);
             pst.setDouble(3, discount);
             pst.setDouble(4, price);
             pst.setDouble(5, amount);
             pst.setString(6, payment.getSelectedItem().toString());
-            pst.setString(7,Utils.authority.username);
+            pst.setString(7, Utils.authority.username);
+            pst.executeUpdate();
 
-            if(amount >0){
-                pst.execute();
-                txtPrice.setText("");
-                quantity.setValue(1);
-                txtTotal.setText("");
-                txtTotalAmt.setText("");
-                txtDiscountAmt.setText("");
-                txtVATAmt.setText("");
-                txtAmt.setText("");
-                ResultSet rs = pst.getGeneratedKeys();
-                if(rs.next())
-                {
-                    primaryKey = rs.getInt(1);
-                }
-                int tableRows = tbl.getRowCount();
-                for(int i =0; i<tableRows; i++){
-                    foodCart fc = new foodCart();
-                    fc.name = tbl.getModel().getValueAt(i,1).toString();
-                    fc.size = tbl.getModel().getValueAt(i,2).toString();
-                    fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i,3).toString());
-                    fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i,4).toString());
-                    fc.price = Double.parseDouble(tbl.getModel().getValueAt(i,5).toString());
-                    orderedFoodList.add(fc);
-
-                }
-                saveBillDetails(primaryKey);
-                return true;
-            }else{
-                JOptionPane.showMessageDialog(null, "Please add some food to cart! ");
-                return false;
+            // Get generated primary key
+            int billId = -1;
+            ResultSet rs = pst.getGeneratedKeys();
+            if (rs.next()) {
+                billId = rs.getInt(1);
             }
-        }catch(Exception ex){
-            JOptionPane.showMessageDialog(null, "Save transaction error " );
+            PreparedStatement pst2 = con.mkDataBase().prepareStatement(
+                    "SELECT invoice_no FROM bill WHERE id = ?  and delete = false"
+            );
+            pst2.setInt(1, billId);
+            ResultSet rs2 = pst2.executeQuery();
+            if (rs2.next()) {
+                System.out.println(rs2.getInt("invoice_no")+"::");
+                invoiceNo = rs2.getInt("invoice_no");
+            }
+            // Save cart items
+            int tableRows = tbl.getRowCount();
+            for (int i = 0; i < tableRows; i++) {
+                foodCart fc = new foodCart();
+                fc.name = tbl.getModel().getValueAt(i, 1).toString();
+                fc.size = tbl.getModel().getValueAt(i, 2).toString();
+                fc.quantity = Integer.parseInt(tbl.getModel().getValueAt(i, 3).toString());
+                fc.unitPrice = Double.parseDouble(tbl.getModel().getValueAt(i, 4).toString());
+                fc.price = Double.parseDouble(tbl.getModel().getValueAt(i, 5).toString());
+                orderedFoodList.add(fc);
+            }
+
+            saveBillDetails(billId);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Save transaction error: " + ex.getMessage());
         }
-    payment.setSelectedItem(PaymentType.Cash.name());
-        return false;
+
+        payment.setSelectedItem(PaymentType.Cash.name());
+        return invoiceNo; // Return the generated invoice number
+    }
+
+    public void cleanTransaction() {
+        dtm.setRowCount(0);
+        foodCartList = new ArrayList<>();
+        txtPrice.setText("");
+        quantity.setValue(1);
+        txtTotal.setText("");
+        txtTotalAmt.setText("");
+        txtDiscountAmt.setText("");
+        txtVATAmt.setText("");
+        txtAmt.setText("");
     }
 
 
