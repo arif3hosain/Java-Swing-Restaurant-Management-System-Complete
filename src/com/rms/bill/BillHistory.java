@@ -103,7 +103,6 @@ public class BillHistory extends JFrame{
                 );
 
                 if (choice == JOptionPane.YES_OPTION) {
-                    System.out.println("selected yes");
                     AppService appService = new AppService();
                     appService.voidInvoice(Utils.getNumberValue(invoiceNo));
                     JOptionPane.showMessageDialog(mainFrame, "Invoice " + invoiceNo + " has been voided successfully.");
@@ -239,12 +238,9 @@ public class BillHistory extends JFrame{
 
     public void initialFillUp(String fromDate,String toDate) {
         message.setText(0 +" Transactions have been found!");
-        System.out.println(fromDate);
-        System.out.println(toDate);
         String sql = "";
         if(fromDate.trim().length() >0 & toDate.trim().length() >0) {
             sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' and delete = false order by id desc";
-            System.out.println(sql);
         }else{
             sql = "select * from bill where  delete = false order by id desc ";
         }

@@ -37,20 +37,20 @@ public class Frame1 {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Set window icon
-		try{
-			// Try loading from resources first (for JAR files)
-			InputStream imageStream = getClass().getResourceAsStream(Utils.LOGO_PATH);
-			if (imageStream != null) {
-				mainFrame.setIconImage(ImageIO.read(imageStream));
-				imageStream.close();
-			} else {
-				// Fallback to file system (for development)
-				mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
-			}
-		}
-		catch (Exception ex){
-			JOptionPane.showMessageDialog(null,Utils.LOGO_NOT_FOUND);
-		}
+//		try{
+//			// Try loading from resources first (for JAR files)
+//			InputStream imageStream = getClass().getResourceAsStream(Utils.LOGO_PATH);
+//			if (imageStream != null) {
+//				mainFrame.setIconImage(ImageIO.read(imageStream));
+//				imageStream.close();
+//			} else {
+//				// Fallback to file system (for development)
+//				mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
+//			}
+//		}
+//		catch (Exception ex){
+//			JOptionPane.showMessageDialog(null,Utils.LOGO_NOT_FOUND);
+//		}
 
 		// Create left panel (40% width)
 		leftPanel = new JPanel();
@@ -123,7 +123,7 @@ public class Frame1 {
 		passLabel.setForeground(Color.white);
 		rightPanel.add(passLabel);
 
-		id = new JTextField("samim");
+		id = new JTextField("");
 		id.setBounds(200, 145, 250, 35);
 		id.setFont(new Font(null, Font.PLAIN, 16));
 		id.setBorder(BorderFactory.createCompoundBorder(
@@ -132,7 +132,7 @@ public class Frame1 {
 		));
 		rightPanel.add(id);
 
-		pass = new JPasswordField("123456");
+		pass = new JPasswordField("");
 		pass.setBounds(200, 195, 250, 35);
 		pass.setFont(new Font(null, Font.PLAIN, 16));
 		pass.setBorder(BorderFactory.createCompoundBorder(

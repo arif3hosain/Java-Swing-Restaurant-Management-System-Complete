@@ -91,7 +91,6 @@ public class EnterFood {
                 mainFrame.setVisible(false);
 
             }catch(Exception ex){
-                System.out.println(ex);
                 JOptionPane.showMessageDialog(null, "Inserting Error 95 : " + tf2.getText());
             }finally{
 

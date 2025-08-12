@@ -155,7 +155,9 @@ public class AppService {
             String itemName,      // e.g., "Beef Kolija" or "All"/""
             String paymentMethod, // e.g., "CASH" or "All"/""
             boolean includeDiscount,
-            boolean includeVAT
+            boolean includeVAT,
+            String from,
+            String to
     ) {
         List<Map<String, Object>> rows = new ArrayList<>();
 
@@ -170,7 +172,7 @@ public class AppService {
                         "              ON i.id = dtl.item_id\n" +
                         "         JOIN bill b\n" +
                         "              ON b.id = dtl.bill_id\n" +
-                        " where 1=1 "
+                        " where b.delete = false "
         );
 
         List<Object> params = new ArrayList<>();
@@ -195,6 +197,11 @@ public class AppService {
         }
         if (!includeVAT) {
             sql.append("AND b.vat_amt = 0.00 ");
+        }
+        if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
+            sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
+            params.add(from.trim() + " 00:00:01");
+            params.add(to.trim() + " 23:59:59");
         }
 
         sql.append("GROUP BY  b.payment_method ORDER BY b.payment_method ");
@@ -228,18 +235,17 @@ public class AppService {
             String itemName,      // e.g., "Beef Kolija" or "All"/""
             String paymentMethod, // e.g., "CASH" or "All"/""
             boolean includeDiscount,
-            boolean includeVAT
+            boolean includeVAT,
+            String from,
+            String to
     ) {
         List<Map<String, Object>> rows = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
                 "SELECT\n" +
-                        "    i.item_name,\n" +
-                        "    i.quantity,\n" +
-                        "    ROUND(SUM(b.amount), 2) AS customerBill,\n" +
-                        "    ROUND(SUM(discount_amt), 2) AS discount,\n" +
-                        "    ROUND(SUM(vat_amt), 2) AS vat,\n" +
-                        "    ROUND(SUM(total), 2) AS paid\n" +
+                        "   i.id,i.item_name, round(dtl.per_unit_price) as per_unit_price,dtl.size,\n" +
+                        "   sum(dtl.quantity) as quantity,\n" +
+                        "   sum(dtl.total_price) as total_price " +
                         "FROM category c\n" +
                         "         JOIN item i\n" +
                         "              ON c.id = i.cat_id\n" +
@@ -247,7 +253,7 @@ public class AppService {
                         "              ON i.id = dtl.item_id\n" +
                         "         JOIN bill b\n" +
                         "              ON b.id = dtl.bill_id\n" +
-                        " where 1=1 "
+                        " where b.delete = false "
         );
 
         List<Object> params = new ArrayList<>();
@@ -273,8 +279,12 @@ public class AppService {
         if (!includeVAT) {
             sql.append("AND b.vat_amt = 0.00 ");
         }
-
-        sql.append("GROUP BY  i.item_name, i.quantity ");
+        if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
+            sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
+            params.add(from.trim() + " 00:00:01");
+            params.add(to.trim() + " 23:59:59");
+        }
+        sql.append("group by i.id, i.item_name, dtl.per_unit_price, dtl.size ");
         sql.append("ORDER BY i.item_name");
 
         try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
@@ -284,14 +294,16 @@ public class AppService {
             }
 
             try (ResultSet rs = pst.executeQuery()) {
+                int count = 0;
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
+                    count++;
+                    row.put("serial", count);
                     row.put("name", rs.getString("item_name"));
-                    row.put("quantity", rs.getString("quantity"));
-                    row.put("customerBill", rs.getInt("customerBill")); // rounded in SQL
-                    row.put("discount", rs.getInt("discount"));
-                    row.put("vat", rs.getInt("vat"));
-                    row.put("paid", rs.getInt("paid"));
+                    row.put("unitPrice", rs.getInt("per_unit_price"));
+                    row.put("size", rs.getString("size"));
+                    row.put("quantity", rs.getInt("quantity")); // rounded in SQL
+                    row.put("amount", rs.getInt("total_price"));
                     rows.add(row);
                 }
             }
@@ -309,7 +321,9 @@ public class AppService {
             String itemName,      // e.g., "Beef Kolija" or "All"/""
             String paymentMethod, // e.g., "CASH" or "All"/""
             boolean includeDiscount,
-            boolean includeVAT
+            boolean includeVAT,
+            String from,
+            String to
     ) {
         List<Map<String, Object>> rows = new ArrayList<>();
 
@@ -348,6 +362,11 @@ public class AppService {
         }
         if (!includeVAT) {
             sql.append("AND b.vat_amt = 0.00 ");
+        }
+        if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
+            sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
+            params.add(from.trim() + " 00:00:01");
+            params.add(to.trim() + " 23:59:59");
         }
 
         sql.append("GROUP BY c.id, c.name ");
@@ -448,10 +467,6 @@ public class AppService {
             }
 
             sql.append("ORDER BY b.created_date DESC");
-
-            System.out.println("Generated SQL: " + sql.toString());
-            System.out.println("Parameters: " + params.toString());
-
             pst = con.mkDataBase().prepareStatement(sql.toString());
 
             // Set all parameters with proper type handling
@@ -481,9 +496,8 @@ public class AppService {
             }
 
         } catch (Exception e) {
-            System.err.println("Error in advanceSearch: " + e.getMessage());
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error loading bill details: " + e.getMessage());
+            //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error in advance search, " + e.getMessage());
         } finally {
             // Close resources
             try {

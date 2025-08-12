@@ -3,6 +3,7 @@ package print;
 import javax.print.*;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -75,7 +76,8 @@ public class PrinterService implements Printable {
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+           // e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "please check your printer setup, "+e.getMessage());
         }
 
     }
@@ -98,7 +100,8 @@ public class PrinterService implements Printable {
             job.print(doc, null);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error in printing", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

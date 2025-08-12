@@ -16,6 +16,7 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -67,7 +68,7 @@ public class GenerateBill extends JFrame {
     JTextField discountPercentage = null;
     int primaryKey ;
     AppService appService = new AppService();
-
+    JLabel logoLabel;
     Font font = new Font("SansSerif", Font.BOLD, 15);
 
     public GenerateBill(){
@@ -94,7 +95,7 @@ public class GenerateBill extends JFrame {
         }
 
         JPanel left = new JPanel(null);
-        left.setBackground(Color.gray);
+        left.setBackground(Color.cyan);
         left.setBounds(0,0,600,700);
 
 
@@ -458,9 +459,43 @@ public class GenerateBill extends JFrame {
         btnClear.setBounds(10,600,100,35);
         btnClear.setFont(font);
         center.add(btnClear);
+
+        logoLabel = new JLabel();
+        logoLabel.setBounds(5, 5, 150, 120); // Centered in left panel
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        logoLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+        // Load company logo
+        try {
+            // Try loading from resources first
+            InputStream logoStream = getClass().getResourceAsStream(Utils.LOGO_PATH);
+            if (logoStream != null) {
+                ImageIcon logoIcon = new ImageIcon(ImageIO.read(logoStream));
+                // Scale the image to fit the label
+                Image scaledImage = logoIcon.getImage().getScaledInstance(180, 140, Image.SCALE_SMOOTH);
+                logoLabel.setIcon(new ImageIcon(scaledImage));
+                logoStream.close();
+            } else {
+                // Fallback to file system
+                ImageIcon logoIcon = new ImageIcon(Utils.LOGO_PATH);
+                if (logoIcon.getIconWidth() > 0) {
+                    Image scaledImage = logoIcon.getImage().getScaledInstance(140, 95, Image.SCALE_SMOOTH);
+                    logoLabel.setIcon(new ImageIcon(scaledImage));
+                } else {
+                    // Show company name if logo not found
+                    logoLabel.setText("<html><div style='text-align: center;'><font color='white' size='6'><b>COMPANY<br>LOGO</b></font></div></html>");
+                }
+            }
+        } catch (Exception ex) {
+            // Show company name if logo not found
+            logoLabel.setText("<html><div style='text-align: center;'><font color='white' size='6'><b>COMPANY<br>LOGO</b></font></div></html>");
+        }
+
+        left.add(logoLabel);
         btnDelete.setBounds(280,50,120,35);
         btnDelete.setFont(font);
         left.add(btnDelete);
+
 
         Object[] paymentItems = new Object[3];
         paymentItems[0] = PaymentType.Cash.name();
@@ -567,11 +602,11 @@ public class GenerateBill extends JFrame {
                 fullText.append(format9).append(line).append(format9).append("\n\n");
 
 
-                System.out.println(fullText);
+               // System.out.println(fullText);
                 PrinterService printerService = new PrinterService();
-//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
-//                byte[] cutP = new byte[]{0x1d, 'V', 1};
-//                printerService.printBytes("SEWOO SLK-TS100", cutP);
+                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+                byte[] cutP = new byte[]{0x1d, 'V', 1};
+                printerService.printBytes("SEWOO SLK-TS100", cutP);
 
                 if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
@@ -795,7 +830,7 @@ public class GenerateBill extends JFrame {
             }
         }catch(Exception e){
             //e.printStackTrace();
-            //JOptionPane.showMessageDialog(null, "Getting items error !");
+            JOptionPane.showMessageDialog(null, "Error in fetching data, "+ e.getMessage());
         }
     }
 
@@ -955,7 +990,6 @@ public class GenerateBill extends JFrame {
             pst2.setInt(1, billId);
             ResultSet rs2 = pst2.executeQuery();
             if (rs2.next()) {
-                System.out.println(rs2.getInt("invoice_no")+"::");
                 invoiceNo = rs2.getInt("invoice_no");
             }
             // Save cart items

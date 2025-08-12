@@ -1,3 +1,17 @@
+alter table bill
+    add delete boolean default false;
+
+alter table bill
+    add delete_by varchar;
+
+alter table bill
+    add delete_time timestamp;
+
+alter table bill
+    add comments varchar(200);
+
+
+
 create table bill
 (
     id             serial

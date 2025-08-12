@@ -28,7 +28,7 @@ public class ReportService {
 
     public void exportByItem(List<Map<String, Object>> data){
         try {
-            String[] fields = new String[]{"serial","itemName","quantity", "amount", "discount", "vat", "billedAmount"};
+            String[] fields = new String[]{"serial","itemName","quantity", "amount", "unitPrice", "size"};
             List inList = new ArrayList();
             Map map = new HashMap();
             map.put("logo",Utils.LOGO_PATH);
@@ -36,13 +36,13 @@ public class ReportService {
              int i =0;
              for(Map<String, Object> obj : data){
                  i++;
-                 String categoryName = Utils.getString(obj.get("name"));
-                 String quantity = Utils.getString(obj.get("quantity"));
-                 Integer amount = Utils.getNumberValue(obj.get("customerBill"));
-                 Integer discount = Utils.getNumberValue(obj.get("discount"));
-                 Integer vat = Utils.getNumberValue(obj.get("vat"));
-                 Integer billedAmount = Utils.getNumberValue(obj.get("paid"));
-                 inList.add(new Object[]{i,categoryName,quantity, amount, discount, vat, billedAmount});
+                 String name = Utils.getString(obj.get("name"));
+                 Integer unitPrice = Utils.getNumberValue(obj.get("unitPrice"));
+                 String size = Utils.getString(obj.get("size"));
+                 Integer quantity = Utils.getNumberValue(obj.get("quantity"));
+                 Integer totalPrice = Utils.getNumberValue(obj.get("amount"));
+
+                 inList.add(new Object[]{i,name, quantity, totalPrice, unitPrice, size});
             }
                 JasperPrint jasperPrint = null;
                 InputStream jasperStream = null;
@@ -111,17 +111,16 @@ public class ReportService {
                 JasperPrint jasperPrint = null;
                 InputStream jasperStream = null;
                 jasperStream = new FileInputStream(new File(Utils.JASPER_PATH + JasperFileName.CATEGORY_WISE_SALES_REPORT));
-//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
                 jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
                 JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH + "Category Wise Sales Report "+Math.random()+".PDF");
 
         } catch (JRException e) {
-            e.printStackTrace();
-          //  JOptionPane.showMessageDialog(null, "Warning when exporting report");
+            //e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Warning when exporting report");
 
         }catch ( IOException e) {
-            e.printStackTrace();
-          //  JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
+//            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Please check correct format (e.g.YYYY-MM-DD), "+e.getMessage());
 
         }
     }
