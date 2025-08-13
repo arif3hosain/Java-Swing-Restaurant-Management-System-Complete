@@ -8,15 +8,20 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+
 import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReportService {
 
@@ -126,52 +131,85 @@ public class ReportService {
     }
 
 
-    public String  exportPDF(String fromDate,String toDate)  {
-        String sql = "";
-        if(fromDate != null || toDate != null) {
-            sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' where  delete = false order by id desc";
-        }else{
-            sql = "select * from bill where  delete = false order by id desc ";
+    public void exportBillHistoryPDF(String fromDate, String toDate) {
+        System.out.println("run this");
+        StringBuilder sql = new StringBuilder("SELECT * FROM bill b WHERE b.delete = false");
+        List<Object> params = new ArrayList<>();
+
+        boolean hasFrom = fromDate != null && fromDate.trim().length() > 0;
+        boolean hasTo = toDate != null && toDate.trim().length() > 0;
+
+        if (hasFrom && hasTo) {
+            sql.append(" AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP)");
+            params.add(fromDate.trim() + " 00:00:01");
+            params.add(toDate.trim() + " 23:59:59");
+        } else if (hasFrom) {
+            sql.append(" AND b.created_date >= CAST(? AS TIMESTAMP)");
+            params.add(fromDate.trim() + " 00:00:01");
+        } else if (hasTo) {
+            sql.append(" AND b.created_date <= CAST(? AS TIMESTAMP)");
+            params.add(toDate.trim() + " 23:59:59");
         }
+
+        sql.append(" ORDER BY b.id DESC");
+
         try {
-            pst = con.mkDataBase().prepareStatement(sql);
+            pst = con.mkDataBase().prepareStatement(sql.toString());
+
+            // Bind parameters
+            for (int i = 0; i < params.size(); i++) {
+                pst.setObject(i + 1, params.get(i)); // JDBC params start at 1
+            }
+
             rs = pst.executeQuery();
-            int i = 0;
             int row = 0;
-            String[] fields = new String[]{"created_date", "description", "vat_amt", "discount_amt", "total","amount"};
-            List inList = new ArrayList();
-            Map map = new HashMap();
-            map.put("logo","/home/ahosain/Documents/personal/RMS/logo.png");
+            String[] fields = {"creation", "amount", "discount", "vat", "billedAmount", "quantity", "serial", "invoiceNo"};
+            List<Object[]> inList = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>();
+            map.put("from", fromDate);
+            map.put("to", toDate);
+            map.put("logo", Utils.LOGO_PATH);
+            map.put("printedBy", Utils.authority.username);
 
             while (rs.next()) {
-                row ++;
-                Date billingTime = rs.getTimestamp("created_date");
+                row++;
+            //    String billingTime = "abc";
+                String billingTime = Utils.convertToTableDate(rs.getTimestamp("created_date"));
                 String description = "";
-                Double vat = rs.getDouble("vat_amt");
-                Double discount = rs.getDouble("discount_amt");
-                Double totalBill = rs.getDouble("total");
-                Double foodBill = rs.getDouble("amount");
-                inList.add(new Object[]{billingTime,description, vat, discount, totalBill, foodBill});
-            }//rs.next();
-            if(row > 0) {
-                JasperPrint jasperPrint = null;
-                InputStream jasperStream = null;
-                jasperStream = new FileInputStream(new File("/home/ahosain/Documents/personal/RMS/palki_billing.jasper"));
-//            jasperStream = this.getClass().getResourceAsStream(GET(INBOUND_TOKEN));
-                jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
-                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH +"(" + fromDate + ") - (" + toDate + ").PDF");
-                return " Transactions have been exported!";
-            }else{
-              return "No data found to export!";
+                String vat = rs.getString("vat_amt");
+                String discount = rs.getString("discount_amt");
+                String amount = rs.getString("total");
+                String billedAmount = rs.getString("amount");
+                String invoiceNo = rs.getString("invoice_no");
+                Date createdDate = rs.getDate("created_date");
+                inList.add(new Object[]{billingTime,
+                        Utils.getDoubleStringtoInteger(amount),
+                        Utils.getDoubleStringtoInteger(discount),
+                        Utils.getDoubleStringtoInteger(vat),
+                        Utils.getDoubleStringtoInteger(billedAmount),
+                         "", row,invoiceNo });
             }
+
+            if (row > 0) {
+                InputStream jasperStream = new FileInputStream(new File(Utils.JASPER_PATH + JasperFileName.HISTORY_REPORT));
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperStream, map, new DataSource(inList, fields));
+                JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH +
+                        "(" + fromDate + ") - (" + toDate + ").PDF");
+                JOptionPane.showMessageDialog(null, "Transactions have been exported!");
+            } else {
+                JOptionPane.showMessageDialog(null, "No data found to export");
+            }
+
         } catch (SQLException e) {
-           return "Please input valid date format";
-        } catch ( JRException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Please input valid data format.");
+        } catch (JRException e) {
             JOptionPane.showMessageDialog(null, "Warning when exporting report");
-            return e.getMessage();
-        }catch ( IOException e) {
-            JOptionPane.showMessageDialog(null, "Please input correct format (e.g.YYYY-MM-DD");
-            return e.getMessage();
+            e.printStackTrace();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Please input correct format (e.g. YYYY-MM-DD)");
+            e.printStackTrace();
         }
     }
+
 }

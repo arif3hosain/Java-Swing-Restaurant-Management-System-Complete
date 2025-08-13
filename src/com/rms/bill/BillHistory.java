@@ -2,8 +2,11 @@ package com.rms.bill;
 
 import com.rms.Frame2new;
 import com.rms.service.AppService;
+import com.rms.service.ReportService;
 import com.rms.setting.Utils;
 import db.DBConnection;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,9 +15,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 public class BillHistory extends JFrame{
 
@@ -31,7 +38,7 @@ public class BillHistory extends JFrame{
     JButton btnAdvanceReport = new JButton("Advance Search");
     JTextField fromDate = new JTextField("");
     JTextField toDate = new JTextField("");
-    JLabel message = new JLabel("5 transactions have been found!");
+    JButton btnExport = new JButton("Export PDF");
 
     // Footer components
     JPanel footerPanel;
@@ -77,8 +84,8 @@ public class BillHistory extends JFrame{
         top.add(btnVoidInvoice);
         btnAdvanceReport.setBounds(790,50,120,35);
         top.add(btnAdvanceReport);
-        message.setBounds(950,50,300,25);
-        top.add(message);
+        btnExport.setBounds(950,50,120,35);
+        top.add(btnExport);
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -150,10 +157,20 @@ public class BillHistory extends JFrame{
         if(!Frame2new.allow){
             btnVoidInvoice.setVisible(false);
             btnSearch.setVisible(false);
-            message.setBounds(590,55,400,25);
-            message.setText("Billing period expired, contact Administrator at 01754282387");
+            //message.setBounds(590,55,400,25);
+            //message.setText("Billing period expired, contact Administrator at 01754282387");
         }
+        btnExport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("called export method");
+                String inputFrom = fromDate.getText();
+                String inputTo = toDate.getText();
+                ReportService reportService = new ReportService();
+                reportService.exportBillHistoryPDF(inputFrom,inputTo);
+            }
+        });
     }
+
 
     private void createFooterPanel() {
         footerPanel = new JPanel();
@@ -237,7 +254,7 @@ public class BillHistory extends JFrame{
     }
 
     public void initialFillUp(String fromDate,String toDate) {
-        message.setText(0 +" Transactions have been found!");
+       // message.setText(0 +" Transactions have been found!");
         String sql = "";
         if(fromDate.trim().length() >0 & toDate.trim().length() >0) {
             sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' and delete = false order by id desc";
@@ -265,11 +282,11 @@ public class BillHistory extends JFrame{
                 dtm.addRow(data);
                 i++;
             }
-            message.setText(row +" Transactions have been found!");
             // Update footer summary after loading data
             updateFooterSummary();
         } catch (Exception e) {
-            message.setText("Input correct date format - YYYY-MM-DD");
+           // message.setText("Input correct date format - YYYY-MM-DD");
+            JOptionPane.showMessageDialog(null, "Input correct date format - YYYY-MM-DD");
             // Clear footer on error
             updateFooterSummary();
         }

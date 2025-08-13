@@ -128,6 +128,15 @@ public class Utils {
         else return Integer.parseInt(value.toString());
     }
 
+    public static Integer getDoubleStringtoInteger(Object value) {
+        if (value == null || "null".equals(value) || "".equals(value)) {
+            return 0;
+        }
+        double doubleValue = Double.parseDouble(value.toString());
+        return (int) Math.round(doubleValue); // rounds to nearest int
+    }
+
+
     public static Double getDoubleValue(Object value) {
         if (value == null || value.equals("null") || value.equals("")) {
             return 0.00;
