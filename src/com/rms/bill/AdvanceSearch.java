@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class AdvanceSearch extends JFrame{
 
-    String columns[] = new String[] {"SERIAL","INVOICE_NO","CATEGORY","ITEM NAME","SIZE","RATE", "BILLED AT","METHOD"};
+    String columns[] = new String[] {"SERIAL","INVOICE_NO","CATEGORY","ITEM NAME","QUANTITY","UNIT","RATE", "BILLED AT","METHOD"};
     AppService appService = new AppService();
     private JFrame mainFrame;
     JTable tbl = null;
@@ -187,8 +187,9 @@ public class AdvanceSearch extends JFrame{
         tbl.getColumnModel().getColumn(3).setPreferredWidth(250);  // ITEM NAME
         tbl.getColumnModel().getColumn(4).setPreferredWidth(50);   // SIZE
         tbl.getColumnModel().getColumn(5).setPreferredWidth(50);   // RATE
-        tbl.getColumnModel().getColumn(6).setPreferredWidth(170);  // BILLED AT
-        tbl.getColumnModel().getColumn(7).setPreferredWidth(50);   // METHOD
+        tbl.getColumnModel().getColumn(6).setPreferredWidth(50);  // BILLED AT
+        tbl.getColumnModel().getColumn(7).setPreferredWidth(170);   // METHOD
+        tbl.getColumnModel().getColumn(8).setPreferredWidth(50);   // METHOD
 
         JScrollPane pane = new JScrollPane(tbl, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         pane.setBounds(0,0,1500,700);
@@ -232,6 +233,7 @@ public class AdvanceSearch extends JFrame{
                         Utils.getString(obj.get("invoiceNo")),
                         Utils.getString(obj.get("category")),
                         Utils.getString(obj.get("item")),
+                        Utils.getString(obj.get("quantity")),
                         Utils.getString(obj.get("size")),
                         Utils.getString(obj.get("price")),
                         Utils.convertToTableDate(obj.get("createdDate")),

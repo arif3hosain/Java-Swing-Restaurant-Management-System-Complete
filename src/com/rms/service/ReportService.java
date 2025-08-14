@@ -98,7 +98,7 @@ public class ReportService {
 
     public void exportByCategory(List<Map<String, Object>> data){
         try {
-            String[] fields = new String[]{"serial","categoryName", "amount", "discount", "vat", "billedAmount"};
+            String[] fields = new String[]{"serial", "id","categoryName", "quantity","amount"};
             List inList = new ArrayList();
             Map map = new HashMap();
             map.put("logo",Utils.LOGO_PATH);
@@ -106,12 +106,12 @@ public class ReportService {
              int i =0;
              for(Map<String, Object> obj : data){
                  i++;
+                 Integer id = Utils.getNumberValue(obj.get("catId"));
                  String categoryName = Utils.getString(obj.get("name"));
-                 Integer amount = Utils.getNumberValue(obj.get("customerBill"));
-                 Integer discount = Utils.getNumberValue(obj.get("discount"));
-                 Integer vat = Utils.getNumberValue(obj.get("vat"));
-                 Integer billedAmount = Utils.getNumberValue(obj.get("paid"));
-                 inList.add(new Object[]{i,categoryName, amount, discount, vat, billedAmount});
+                 String quantity = Utils.getString(obj.get("quantity"));
+                 Integer amount = Utils.getNumberValue(obj.get("amount"));
+
+                 inList.add(new Object[]{i,id, categoryName, quantity, amount});
             }
                 JasperPrint jasperPrint = null;
                 InputStream jasperStream = null;
@@ -120,7 +120,7 @@ public class ReportService {
                 JasperExportManager.exportReportToPdfFile(jasperPrint, Utils.REPORT_EXPORT_PATH + "Category Wise Sales Report "+Math.random()+".PDF");
 
         } catch (JRException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Warning when exporting report");
 
         }catch ( IOException e) {

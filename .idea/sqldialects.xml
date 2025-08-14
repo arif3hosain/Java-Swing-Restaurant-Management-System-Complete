@@ -2,5 +2,9 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/com/rms/service/AppService.java" dialect="GenericSQL" />
+    <file url="file://$USER_HOME$/Downloads/data/bill.sql" dialect="PostgreSQL" />
+    <file url="file://$USER_HOME$/Downloads/data/bill_details.sql" dialect="PostgreSQL" />
+    <file url="file://$USER_HOME$/Downloads/data/category.sql" dialect="PostgreSQL" />
+    <file url="file://$USER_HOME$/Downloads/data/item.sql" dialect="PostgreSQL" />
   </component>
 </project>

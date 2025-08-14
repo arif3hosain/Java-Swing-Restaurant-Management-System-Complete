@@ -30,7 +30,7 @@ public class ReportBuilder extends JFrame{
 
     // Report Type (New - First Row)
     JLabel reportTypeLabel = new JLabel("Report Type:");
-    JComboBox<String> reportTypeCombo = new JComboBox<>(new String[]{"Category Wise Sales Report", "Item Wise Sales Report", "Payment Method Wise Sales Report"});
+    JComboBox<String> reportTypeCombo = new JComboBox<>(new String[]{"Select Report","Category Wise Sales Report", "Item Wise Sales Report", "Payment Method Wise Sales Report"});
 
     // Filter components (Row 2)
     JLabel categoryLabel = new JLabel("Category:");
@@ -154,12 +154,12 @@ public class ReportBuilder extends JFrame{
         chkDiscount.setBounds(450, yPos, 150, 30);
         chkDiscount.setFont(Utils.FONT_16);
         chkDiscount.setSelected(true);
-        mainPanel.add(chkDiscount);
+       // mainPanel.add(chkDiscount);
 
         chkVAT.setBounds(610, yPos, 120, 30);
         chkVAT.setFont(Utils.FONT_16);
         chkVAT.setSelected(true);
-        mainPanel.add(chkVAT);
+      //  mainPanel.add(chkVAT);
         yPos += 40;
 
         // 5. Date Filter Row
@@ -293,16 +293,22 @@ public class ReportBuilder extends JFrame{
         mainPanel.add(message);
 
         mainFrame.add(mainPanel);
+
+        paymentLabel.setVisible(false);
+        paymentCombo.setVisible(false);
     }
 
     private void addEventListeners() {
         // Report type change listener
         reportTypeCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                hideShowComponent(reportTypeCombo.getSelectedItem().toString());
                 updateTableColumnsBasedOnReportType();
                 clearTableData();
             }
         });
+
+
 
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -335,7 +341,7 @@ public class ReportBuilder extends JFrame{
 
         switch (selectedReport) {
             case "Category Wise Sales Report":
-                columnNames = new String[]{"Category ID", "Category Name", "Amount", "Discount", "VAT", "Billed Amount"};
+                columnNames = new String[]{"Serial", "Category ID", "Category Name","Quantity", "Amount"};
                 break;
             case "Item Wise Sales Report":
                 columnNames = new String[]{"Item Name", "Quantity", "Unit of Measurement", "Unit Price", "Total Rate"};
@@ -387,16 +393,16 @@ public class ReportBuilder extends JFrame{
             // Call appropriate method based on report type
             switch (reportType) {
                 case "Category Wise Sales Report":
-                    objectList = appService.getSummaryByCategory(category, item, paymentMethod, includeDiscount, includeVat, fromDate, toDate);
+                    objectList = appService.getSummaryByCategory(category, item, fromDate, toDate);
                     break;
                 case "Item Wise Sales Report":
-                    objectList = appService.getSummaryByItem(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                    objectList = appService.getSummaryByItem(category, item,fromDate,toDate);
                     break;
                 case "Payment Method Wise Sales Report":
-                    objectList = appService.getSummaryByPaymentMethod(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                    objectList = appService.getSummaryByPaymentMethod( paymentMethod,fromDate,toDate);
                     break;
                 default:
-                    objectList = appService.getSummaryByCategory(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                    objectList = appService.getSummaryByCategory(category, item,fromDate,toDate);
                     break;
             }
 
@@ -411,10 +417,10 @@ public class ReportBuilder extends JFrame{
                 tableModel.addRow(tableRow);
 
                 // Calculate totals
-                totalAmount += getDoubleValue(row, "paid", null);
+                totalAmount += getDoubleValue(row, "paid", "amount");
                 totalDiscount -= getDoubleValue(row, "discount", null);
                 totalVAT += getDoubleValue(row, "vat", null);
-                totalPaid +=  getDoubleValue(row, "customerBill", "amount");
+                totalPaid +=  getDoubleValue(row, "customerBill", null);
             }
 
             updateSummaryLabels(totalAmount, totalPaid, Math.abs(totalDiscount), totalVAT);
@@ -428,16 +434,34 @@ public class ReportBuilder extends JFrame{
         }
     }
 
+    private void hideShowComponent(String name){
+        System.out.println(">> "+name);
+        if(name.equalsIgnoreCase("Category Wise Sales Report")){
+            paymentLabel.setVisible(false);
+            paymentCombo.setVisible(false);
+        }else if (name.equalsIgnoreCase("Item Wise Sales Report")){
+            paymentLabel.setVisible(false);
+            paymentCombo.setVisible(false);
+        }else if (name.equalsIgnoreCase("Payment Method Wise Sales Report")){
+            categoryLabel.setVisible(false);
+            categoryCombo.setVisible(false);
+            itemLabel.setVisible(false);
+            itemCombo.setVisible(false);
+            paymentLabel.setVisible(false);
+            paymentCombo.setVisible(false);
+
+        }
+    }
+
     private Object[] createTableRowBasedOnReportType(Map<String, Object> row, String reportType) {
         switch (reportType) {
             case "Category Wise Sales Report":
                 return new Object[]{
-                        row.get("id"),
+                        row.get("serial"),
+                        row.get("catId"),
                         row.get("name"),
-                        row.get("paid"),
-                        row.get("discount"),
-                        row.get("vat"),
-                        row.get("customerBill"),
+                        row.get("quantity"),
+                        row.get("amount")
                 };
             case "Item Wise Sales Report":
                 return new Object[]{
@@ -534,13 +558,13 @@ public class ReportBuilder extends JFrame{
 
         try {
             if(reportType.equalsIgnoreCase("Category Wise Sales Report")){
-                List<Map<String,Object>> objectList = appService.getSummaryByCategory(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                List<Map<String,Object>> objectList = appService.getSummaryByCategory(category, item,fromDate,toDate);
                 reportService.exportByCategory(objectList);
             }else if (reportType.equalsIgnoreCase("Item Wise Sales Report")){
-                List<Map<String,Object>> objectList = appService.getSummaryByItem(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                List<Map<String,Object>> objectList = appService.getSummaryByItem(category, item,fromDate,toDate);
                 reportService.exportByItem(objectList);
             } else if (reportType.equalsIgnoreCase("Payment Method Wise Sales Report")){
-                List<Map<String,Object>> objectList = appService.getSummaryByPaymentMethod(category, item, paymentMethod, includeDiscount, includeVat,fromDate,toDate);
+                List<Map<String,Object>> objectList = appService.getSummaryByPaymentMethod( paymentMethod, fromDate,toDate);
                 reportService.exportByPaymentMethod(objectList);
             }
 

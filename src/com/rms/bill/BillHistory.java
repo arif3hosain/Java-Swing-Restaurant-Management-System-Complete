@@ -50,7 +50,7 @@ public class BillHistory extends JFrame{
 
     public BillHistory(){
         mainFrame = new JFrame("Bill History");
-        mainFrame.setSize(1300,950); // Increased height for footer
+        mainFrame.setSize(1300,750); // Increased height for footer
         mainFrame.setResizable(false);
         mainFrame.setLayout(null);
         mainFrame.setLocationRelativeTo(null);
@@ -67,7 +67,7 @@ public class BillHistory extends JFrame{
         top.setBounds(0,0,1300,100);
 
         JPanel middle = new JPanel(null);
-        middle.setBounds(0,100,1300,750); // Reduced height for footer
+        middle.setBounds(0,100,1300,500); // Reduced height for footer
 
         // Create footer panel
         createFooterPanel();
@@ -147,7 +147,7 @@ public class BillHistory extends JFrame{
         tbl.getColumnModel().getColumn(7).setPreferredWidth(70);   // METHOD
 
         JScrollPane pane = new JScrollPane(tbl, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        pane.setBounds(0,0,1300,750); // Adjusted height
+        pane.setBounds(0,0,1300,500); // Adjusted height
         middle.add(pane);
 
         mainFrame.add(top);
@@ -177,7 +177,7 @@ public class BillHistory extends JFrame{
         footerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
         footerPanel.setBackground(new Color(240, 240, 240)); // Light gray background
         footerPanel.setBorder(BorderFactory.createEtchedBorder());
-        footerPanel.setBounds(0, 850, 1300, 50);
+        footerPanel.setBounds(0, 650, 1300, 50);
 
         // Initialize summary labels
         lblTotalItems = new JLabel("Items: 0");

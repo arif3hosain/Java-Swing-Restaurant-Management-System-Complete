@@ -148,70 +148,33 @@ public class AppService {
         return items;
     }
 
-
-
     public List<Map<String, Object>> getSummaryByPaymentMethod(
-            String cat,           // e.g., "Beef" or "All"
-            String itemName,      // e.g., "Beef Kolija" or "All"/""
-            String paymentMethod, // e.g., "CASH" or "All"/""
-            boolean includeDiscount,
-            boolean includeVAT,
+            String paymentMethod,
             String from,
             String to
     ) {
         List<Map<String, Object>> rows = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "SELECT\n" +
-                        "    b.payment_method,\n" +
-                        "    ROUND(SUM(b.amount), 2) AS customerBill\n" +
-                        "FROM category c\n" +
-                        "         JOIN item i\n" +
-                        "              ON c.id = i.cat_id\n" +
-                        "         JOIN bill_details dtl\n" +
-                        "              ON i.id = dtl.item_id\n" +
-                        "         JOIN bill b\n" +
-                        "              ON b.id = dtl.bill_id\n" +
-                        " where b.delete = false "
+                "SELECT    payment_method,  ROUND(SUM(amount), 2) AS customerBill\n" +
+                        "FROM  bill\n" +
+                        "WHERE delete = false "
         );
-
         List<Object> params = new ArrayList<>();
-
-        // Filters (treat null/empty/"All" as no filter)
-        if (cat != null && !cat.trim().isEmpty() && !"All".equalsIgnoreCase(cat)) {
-            sql.append("AND c.name = ? ");
-            params.add(cat.trim());
-        }
-        if (itemName != null && !itemName.trim().isEmpty() && !"All".equalsIgnoreCase(itemName)) {
-            sql.append("AND i.item_name = ? ");
-            params.add(itemName.trim());
-        }
         if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
-            sql.append("AND b.payment_method = ? ");
+            sql.append("AND payment_method = ? ");
             params.add(paymentMethod.trim());
         }
-
-        // Discount/VAT include flags
-        if (!includeDiscount) {
-            sql.append("AND b.discount_amt = 0.00 ");
-        }
-        if (!includeVAT) {
-            sql.append("AND b.vat_amt = 0.00 ");
-        }
         if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
-            sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
+            sql.append("AND created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
             params.add(from.trim() + " 00:00:01");
             params.add(to.trim() + " 23:59:59");
         }
-
-        sql.append("GROUP BY  b.payment_method ORDER BY b.payment_method ");
-
+        sql.append(" GROUP BY payment_method ");
         try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
-            // bind parameters
             for (int i = 0; i < params.size(); i++) {
                 pst.setObject(i + 1, params.get(i));
             }
-
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
@@ -221,7 +184,7 @@ public class AppService {
                 }
             }
         } catch (Exception e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error loading summary by payment method: " + e.getMessage());
         }
 
@@ -231,11 +194,8 @@ public class AppService {
 
 
     public List<Map<String, Object>> getSummaryByItem(
-            String cat,           // e.g., "Beef" or "All"
-            String itemName,      // e.g., "Beef Kolija" or "All"/""
-            String paymentMethod, // e.g., "CASH" or "All"/""
-            boolean includeDiscount,
-            boolean includeVAT,
+            String cat,
+            String itemName,
             String from,
             String to
     ) {
@@ -266,18 +226,6 @@ public class AppService {
         if (itemName != null && !itemName.trim().isEmpty() && !"All".equalsIgnoreCase(itemName)) {
             sql.append("AND i.item_name = ? ");
             params.add(itemName.trim());
-        }
-        if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
-            sql.append("AND b.payment_method = ? ");
-            params.add(paymentMethod.trim());
-        }
-
-        // Discount/VAT include flags
-        if (!includeDiscount) {
-            sql.append("AND b.discount_amt = 0.00 ");
-        }
-        if (!includeVAT) {
-            sql.append("AND b.vat_amt = 0.00 ");
         }
         if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
             sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
@@ -317,32 +265,31 @@ public class AppService {
 
     public List<Map<String, Object>> getSummaryByCategory(
 
-            String cat,           // e.g., "Beef" or "All"
-            String itemName,      // e.g., "Beef Kolija" or "All"/""
-            String paymentMethod, // e.g., "CASH" or "All"/""
-            boolean includeDiscount,
-            boolean includeVAT,
+            String cat,
+            String itemName,
             String from,
             String to
     ) {
         List<Map<String, Object>> rows = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "SELECT c.id, c.name, " +
-                        "       ROUND(SUM(b.amount), 2)       AS customerBill, " +
-                        "       ROUND(SUM(b.discount_amt), 2) AS discount, " +
-                        "       ROUND(SUM(b.vat_amt), 2)      AS vat, " +
-                        "       ROUND(SUM(b.total), 2)        AS paid " +
-                        "FROM category c " +
-                        "JOIN item i         ON c.id = i.cat_id " +
-                        "JOIN bill_details d ON i.id = d.item_id " +
-                        "JOIN bill b         ON b.id = d.bill_id " +
-                        "WHERE b.delete = false "
+                "select x.cat_id, name, sum(quantity) as quantity, round(sum( total_price)) as total_price\n" +
+                        "from\n" +
+                        "(SELECT\n" +
+                        "    c.id cat_id,c.name,\n" +
+                        "    SUM(dtl.quantity)        AS quantity,\n" +
+                        "    SUM(dtl.total_price)     AS total_price\n" +
+                        "FROM category c\n" +
+                        "         JOIN item i\n" +
+                        "              ON c.id = i.cat_id\n" +
+                        "         JOIN bill_details dtl\n" +
+                        "              ON i.id = dtl.item_id\n" +
+                        "         JOIN bill b\n" +
+                        "              ON b.id = dtl.bill_id\n" +
+                        "WHERE b.delete = false \n"
         );
 
         List<Object> params = new ArrayList<>();
-
-        // Filters (treat null/empty/"All" as no filter)
         if (cat != null && !cat.trim().isEmpty() && !"All".equalsIgnoreCase(cat)) {
             sql.append("AND c.name = ? ");
             params.add(cat.trim());
@@ -351,42 +298,29 @@ public class AppService {
             sql.append("AND i.item_name = ? ");
             params.add(itemName.trim());
         }
-        if (paymentMethod != null && !paymentMethod.trim().isEmpty() && !"All".equalsIgnoreCase(paymentMethod)) {
-            sql.append("AND b.payment_method = ? ");
-            params.add(paymentMethod.trim());
-        }
-
-        // Discount/VAT include flags
-        if (!includeDiscount) {
-            sql.append("AND b.discount_amt = 0.00 ");
-        }
-        if (!includeVAT) {
-            sql.append("AND b.vat_amt = 0.00 ");
-        }
         if (from != null && to != null && from.trim().length() > 0 && to.trim().length() > 0) {
             sql.append("AND b.created_date BETWEEN CAST(? AS TIMESTAMP) AND CAST(? AS TIMESTAMP) ");
             params.add(from.trim() + " 00:00:01");
             params.add(to.trim() + " 23:59:59");
         }
-
-        sql.append("GROUP BY c.id, c.name ");
-        sql.append("ORDER BY c.name");
+      sql.append("group by c.id, c.name, i.id, i.item_name, dtl.per_unit_price, dtl.size) x\n" +
+                "group by x.cat_id, name\n" +
+                "order by x.name\n ");
 
         try (PreparedStatement pst = con.mkDataBase().prepareStatement(sql.toString())) {
-            // bind parameters
             for (int i = 0; i < params.size(); i++) {
                 pst.setObject(i + 1, params.get(i));
             }
-
+            int i =0;
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
+                    i++;
                     Map<String, Object> row = new HashMap<>();
-                    row.put("id", rs.getLong("id"));
+                    row.put("serial",i);
+                    row.put("catId", rs.getInt("cat_id"));
                     row.put("name", rs.getString("name"));
-                    row.put("customerBill", rs.getInt("customerBill")); // rounded in SQL
-                    row.put("discount", rs.getInt("discount"));
-                    row.put("vat", rs.getInt("vat"));
-                    row.put("paid", rs.getInt("paid"));
+                    row.put("quantity", rs.getInt("quantity"));
+                    row.put("amount", rs.getInt("total_price"));
                     rows.add(row);
                 }
             }
@@ -394,7 +328,6 @@ public class AppService {
            // e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error loading summary by category: " + e.getMessage());
         }
-
         return rows;
     }
 
@@ -406,7 +339,7 @@ public class AppService {
 
         try {
             StringBuilder sql = new StringBuilder(
-                    "SELECT DISTINCT cat.name AS category, detail.food,item.price, detail.size, b.created_date, " +
+                    "SELECT DISTINCT cat.name AS category, detail.food,item.price,detail.quantity, detail.size, b.created_date, " +
                             "b.invoice_no, b.amount, b.discount_amt, b.vat_amt,b.payment_method " +
                             "FROM bill_details detail " +
                             "JOIN bill b ON b.id = detail.bill_id " +
@@ -485,6 +418,7 @@ public class AppService {
                 dtl.put("category", rs.getString("category"));
                 dtl.put("item", rs.getString("food"));
                 dtl.put("size", rs.getString("size"));
+                dtl.put("quantity", rs.getString("quantity"));
                 dtl.put("createdDate", rs.getString("created_date"));
                 dtl.put("invoiceNo", rs.getString("invoice_no"));
                 dtl.put("amount", rs.getString("amount"));
