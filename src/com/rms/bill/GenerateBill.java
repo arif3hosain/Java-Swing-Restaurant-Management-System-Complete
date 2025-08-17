@@ -611,11 +611,11 @@ public class GenerateBill extends JFrame {
                 fullText.append(format9).append(line).append(format9).append("\n\n");
 
 
-                System.out.println(fullText);
-//                PrinterService printerService = new PrinterService();
-//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
-//                byte[] cutP = new byte[]{0x1d, 'V', 1};
-//                printerService.printBytes("SEWOO SLK-TS100", cutP);
+//                System.out.println(fullText);
+                PrinterService printerService = new PrinterService();
+                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+                byte[] cutP = new byte[]{0x1d, 'V', 1};
+                printerService.printBytes("SEWOO SLK-TS100", cutP);
 
                 if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
