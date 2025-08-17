@@ -21,14 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
-    public static int defaultPageSize = 15;
-    public static int DISPLAY_5 = 5;
-    public static int DISPLAY_10 = 10;
 
-//        public static String resourcePath = "/Users/arifhosain/ccl_resources";
-//    public static String resourcePath = "/home/arifhosain/ccl_resources";
-//    public static String resourcePath = "/home/tomcat/ccl_resources";
-//    public static String resourcePath = "D:/ccl_resources";
     public static String LOGO_PATH = "/home/ahosain/Documents/personal/RMS/logo.png";
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
     public static String TITLE = "BANGLA BHOJ & PARTY CENTER";
@@ -41,6 +34,10 @@ public class Utils {
     public static Authority authority;;
     public static String JASPER_PATH = "/home/ahosain/Documents/personal/RMS/jasper/";
 
+    public static Integer daysLimit = 0 ;
+    public static Integer daysUsed = 0 ;
+    public static Integer fromBillingId = 0 ;
+    public static Integer billingId = 0 ;
 
     public static boolean isEmpty(String str) {
         if (str == null) return true;

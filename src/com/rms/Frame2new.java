@@ -1,7 +1,8 @@
 package com.rms;
-import com.rms.bill.ReportBuilder;
+
 import com.rms.bill.BillHistory;
 import com.rms.bill.GenerateBill;
+import com.rms.bill.ReportBuilder;
 import com.rms.category.CategoryView;
 import com.rms.item.ItemView;
 import com.rms.setting.Diff;
@@ -10,20 +11,16 @@ import com.rms.setting.Utils;
 import db.DBConnection;
 import dto.Role;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.Color;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Frame2new {
 
@@ -37,14 +34,8 @@ public class Frame2new {
     JButton billHistory = new JButton("Bill History");
     JButton setting = new JButton("Setting");
     JButton reports = new JButton("Reports");
-
-    public static Integer fromID;
-    public static Integer storedDays;
-    public static Integer days;
     public static boolean allow = true;
-    static int dayLimit = 45;
-    int exitLimit = dayLimit+3;
-
+    private static String from_id = null;
 
    public Frame2new(){
       prepareGUI();
@@ -56,7 +47,7 @@ public class Frame2new {
       mainFrame.setLayout(new GridLayout(3,1));
       mainFrame.setResizable(false);
 	  mainFrame.getContentPane().setBackground(Color.orange);
-       countDay();
+
       mainFrame.addWindowListener(new WindowAdapter() {
          public void windowClosing(WindowEvent windowEvent){
             System.exit(0);
@@ -70,20 +61,27 @@ public class Frame2new {
       mainFrame.add(headerLabel);
       mainFrame.add(controlPanel);
       mainFrame.add(statusLabel);
-
+      countDay();
        try{
            mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
        }
        catch (Exception ex){
            JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
        }
+       System.out.println("days limit "+Utils.daysLimit);
+       System.out.println("day used  "+Utils.daysUsed);
+       System.out.println();
 
-       if(days >= exitLimit){
-           JOptionPane.showMessageDialog(null, "You billing period has been expired with additional 3 days. Call at 01754282387 for help. ");
+       if(Utils.daysUsed > Utils.daysLimit ){
+           JOptionPane.showMessageDialog(null, "Your billing period expired. Call at 01754282387 for renewal. ");
            btnItem.setEnabled(false);
            btnCategory.setEnabled(false);
            billHistory.setEnabled(false);
            btnBill.setEnabled(false);
+           reports.setEnabled(false);
+       }
+       else if(Utils.daysUsed +3 >= Utils.daysLimit ){
+           JOptionPane.showMessageDialog(null, "Your billing period will be expired soon. Call at 01754282387 for renewal. ");
        }
        mainFrame.setLocationRelativeTo(null);
    }
@@ -145,12 +143,6 @@ public class Frame2new {
            controlPanel.add(btnBill);
            controlPanel.add(billHistory);
            controlPanel.add(reports);
-//           controlPanel.add(btnBill);
-//           btnBill.setPreferredSize(new Dimension(300, 40));
-//           JPanel wrapper = new JPanel();
-//           wrapper.setOpaque(false); // Make background transparent to match layout
-//           wrapper.add(btnBill);
-//           controlPanel.add(wrapper);
        }
        mainFrame.setLocationRelativeTo(null);
        mainFrame.setVisible(true);
@@ -159,7 +151,7 @@ public class Frame2new {
 
    }
 
-    public static  void setDefaultValues() {
+    public static  void getDefaultValues() {
         ResultSet rs;
         PreparedStatement pst;
         DBConnection con = new DBConnection();
@@ -167,7 +159,7 @@ public class Frame2new {
             pst = con.mkDataBase().prepareStatement("select * from keyvalue");
             rs = pst.executeQuery();
             String stored_days = null;
-            String from_id = null;
+
             while(rs.next()){
                 Utils.REPORT_EXPORT_PATH = rs.getString("report_path");
                 Utils.VAT = rs.getString("vat");
@@ -176,11 +168,13 @@ public class Frame2new {
                 stored_days = rs.getString("duration_count");
                 from_id = rs.getString("subscription_from");
             }
-           days = Integer.parseInt(Diff.decrypt(stored_days));
-           fromID = Integer.parseInt(Diff.decrypt(from_id));
+           Utils.daysLimit = Integer.parseInt(Diff.decrypt(stored_days));
+            System.out.println("days limit "+Utils.daysLimit);
+           Utils.billingId = Integer.parseInt(Diff.decrypt(from_id));
+//           System.out.println(days +"::: "+fromID);
         }catch(Exception e){
             //e.printStackTrace();
-            //JOptionPane.showMessageDialog(null, "Data changes has been found!");
+            JOptionPane.showMessageDialog(null, "Data changes has been found!");
         }
     }
 
@@ -193,22 +187,24 @@ public class Frame2new {
             pst = con.mkDataBase().prepareStatement("select count(*)d from\n" +
                     "(select distinct x.days from\n" +
                     "(select id,cast( created_date as date) days from bill\n" +
-                    "where id > "+fromID+")x)data");
+                    "where id > "+Utils.billingId+")x)data");
             rs = pst.executeQuery();
             while(rs.next()){
-                days = rs.getInt("d");
+                Utils.daysUsed = rs.getInt("d");
             }
             rs.close();
         }catch(Exception e){
-         //   //e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Changes found to the system!");
         }
+       /* System.out.println("days: "+days);
+        System.out.println("limit days: "+dayLimit);
+
         if(days > dayLimit){
             allow = false;
         }else if (days == dayLimit){
-            JOptionPane.showMessageDialog(null, "Your monthly subscription will be ended today, Please update your limit! ");
+            JOptionPane.showMessageDialog(null, "Please unlock your subscription today to continue system use. ");
         }else if ((days+1) == dayLimit){
-            JOptionPane.showMessageDialog(null, "Your monthly subscription will be ended day after tomorrow, Please renew subscription! ");
+            JOptionPane.showMessageDialog(null, "System will be locked day after tomorrow. Please unlock your subscription.");
         }
 
            if(!days.equals(storedDays)){
@@ -221,7 +217,7 @@ public class Frame2new {
                    JOptionPane.showMessageDialog(null, "SQL Error found!");
                }
            }else{
-           }
+           }*/
 
     }
 

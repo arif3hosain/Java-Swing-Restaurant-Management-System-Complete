@@ -36,23 +36,6 @@ public class Frame1 {
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// Set window icon
-//		try{
-//			// Try loading from resources first (for JAR files)
-//			InputStream imageStream = getClass().getResourceAsStream(Utils.LOGO_PATH);
-//			if (imageStream != null) {
-//				mainFrame.setIconImage(ImageIO.read(imageStream));
-//				imageStream.close();
-//			} else {
-//				// Fallback to file system (for development)
-//				mainFrame.setIconImage(ImageIO.read(new File(Utils.LOGO_PATH)));
-//			}
-//		}
-//		catch (Exception ex){
-//			JOptionPane.showMessageDialog(null,Utils.LOGO_NOT_FOUND);
-//		}
-
-		// Create left panel (40% width)
 		leftPanel = new JPanel();
 		leftPanel.setLayout(null);
 		leftPanel.setBackground(new Color(70, 130, 180)); // Steel blue color
@@ -64,7 +47,6 @@ public class Frame1 {
 		logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		logoLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-		// Load company logo
 		try {
 			// Try loading from resources first
 			InputStream logoStream = getClass().getResourceAsStream(Utils.LOGO_PATH);
@@ -123,7 +105,7 @@ public class Frame1 {
 		passLabel.setForeground(Color.white);
 		rightPanel.add(passLabel);
 
-		id = new JTextField("");
+		id = new JTextField("samim");
 		id.setBounds(200, 145, 250, 35);
 		id.setFont(new Font(null, Font.PLAIN, 16));
 		id.setBorder(BorderFactory.createCompoundBorder(
@@ -132,7 +114,7 @@ public class Frame1 {
 		));
 		rightPanel.add(id);
 
-		pass = new JPasswordField("");
+		pass = new JPasswordField("123456");
 		pass.setBounds(200, 195, 250, 35);
 		pass.setFont(new Font(null, Font.PLAIN, 16));
 		pass.setBorder(BorderFactory.createCompoundBorder(
@@ -227,7 +209,7 @@ public class Frame1 {
 	}
 
 	public static void main(String[] a) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Frame2new.setDefaultValues();
+		Frame2new.getDefaultValues();
 		try {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {

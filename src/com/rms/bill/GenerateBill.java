@@ -88,11 +88,20 @@ public class GenerateBill extends JFrame {
             JOptionPane.showMessageDialog(null, Utils.LOGO_NOT_FOUND);
         }
         showButtonDemo();
-        Object[] items = new Object[itemCount+1];
+        List<Item> itemObject = appService.getUniqueItems();
+        Object[] items = new Object[itemObject.size()+1];
         items[0] = "";
-        for(int i =0; i<(itemCount); i++){
-            items[i+1] = data[i];
+
+        for(int i =0; i<(itemObject.size()); i++){
+            items[i+1] = itemObject.get(i).name;
         }
+
+
+//        Object[] items = new Object[itemCount+1];
+//        items[0] = "";
+//        for(int i =0; i<(itemCount); i++){
+//            items[i+1] = data[i];
+//        }
 
         JPanel left = new JPanel(null);
         left.setBackground(Color.cyan);
@@ -230,7 +239,7 @@ public class GenerateBill extends JFrame {
         center.add(comboSize);
 
         txtPrice.setBounds(160,140,200,30);
-        txtPrice.setEditable(false);
+        txtPrice.setEditable(true);
         txtPrice.setFont(font);
         center.add(txtPrice);
         quantity.setBounds(160, 180, 100, 30);
@@ -602,11 +611,11 @@ public class GenerateBill extends JFrame {
                 fullText.append(format9).append(line).append(format9).append("\n\n");
 
 
-               // System.out.println(fullText);
-                PrinterService printerService = new PrinterService();
-                printerService.printString("SEWOO SLK-TS100", fullText.toString());
-                byte[] cutP = new byte[]{0x1d, 'V', 1};
-                printerService.printBytes("SEWOO SLK-TS100", cutP);
+                System.out.println(fullText);
+//                PrinterService printerService = new PrinterService();
+//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+//                byte[] cutP = new byte[]{0x1d, 'V', 1};
+//                printerService.printBytes("SEWOO SLK-TS100", cutP);
 
                 if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
@@ -1007,7 +1016,7 @@ public class GenerateBill extends JFrame {
             saveBillDetails(billId);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Save transaction error: " + ex.getMessage());
         }
 

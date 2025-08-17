@@ -258,6 +258,7 @@ public class BillHistory extends JFrame{
         String sql = "";
         if(fromDate.trim().length() >0 & toDate.trim().length() >0) {
             sql = "select * from bill where created_date between '"+(fromDate+" 00:00:01")+"' and '"+(toDate+" 23:59:59")+"' and delete = false order by id desc";
+            System.out.println(sql);
         }else{
             sql = "select * from bill where  delete = false order by id desc ";
         }

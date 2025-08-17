@@ -5,6 +5,7 @@
     <file url="file://$USER_HOME$/Downloads/data/bill.sql" dialect="PostgreSQL" />
     <file url="file://$USER_HOME$/Downloads/data/bill_details.sql" dialect="PostgreSQL" />
     <file url="file://$USER_HOME$/Downloads/data/category.sql" dialect="PostgreSQL" />
+    <file url="file://$USER_HOME$/Downloads/data/food_size.sql" dialect="PostgreSQL" />
     <file url="file://$USER_HOME$/Downloads/data/item.sql" dialect="PostgreSQL" />
   </component>
 </project>
