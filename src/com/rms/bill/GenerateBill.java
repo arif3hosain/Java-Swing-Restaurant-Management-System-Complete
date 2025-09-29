@@ -421,6 +421,7 @@ public class GenerateBill extends JFrame {
                     txtDiscountAmt.setText("");
                     txtVATAmt.setText("");
                     txtAmt.setText("");
+                    note.setText("");
                     dtm.setRowCount(0);
                     foodCartList = new ArrayList<>();
                 }
@@ -591,14 +592,6 @@ public class GenerateBill extends JFrame {
 
                     fullText.append(wrappedNote).append("\n\n");
 
-
-//                line = "Note : " + note.getText();
-//                String format10 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
-//                fullText.append(format10).append(line).append(format6).append("\n\n");
-
-
-
-
                 line = "Powered By: www.facebook.com/easybilling";
                 String format7 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format7).append(line).append(format7).append("\n");
@@ -612,11 +605,11 @@ public class GenerateBill extends JFrame {
                 fullText.append(format9).append(line).append(format9).append("\n\n");
 
 
-                System.out.println(fullText);
-//                PrinterService printerService = new PrinterService();
-//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
-//                byte[] cutP = new byte[]{0x1d, 'V', 1};
-//                printerService.printBytes("SEWOO SLK-TS100", cutP);
+//                System.out.println(fullText);
+                PrinterService printerService = new PrinterService();
+                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+                byte[] cutP = new byte[]{0x1d, 'V', 1};
+                printerService.printBytes("SEWOO SLK-TS100", cutP);
 
                 if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");
@@ -1035,6 +1028,7 @@ public class GenerateBill extends JFrame {
         txtDiscountAmt.setText("");
         txtVATAmt.setText("");
         txtAmt.setText("");
+        note.setText("");
     }
 
 
