@@ -66,6 +66,7 @@ public class GenerateBill extends JFrame {
     List<foodCart> orderedFoodList = new ArrayList<>();
     JTextField vatPercentage = null;
     JTextField discountPercentage = null;
+    JTextField note = null;
     int primaryKey ;
     AppService appService = new AppService();
     JLabel logoLabel;
@@ -156,54 +157,6 @@ public class GenerateBill extends JFrame {
             }
         });
 
-
-
-
-       /* editor.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    String input = editor.getText();
-                    filterComboBox(input);
-                });
-            }
-        });*/
-
-       /* editor.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && comboItem.isPopupVisible()) {
-                    Object selected = comboItem.getSelectedItem();
-                    if (selected != null) {
-                        editor.setText(selected.toString());
-                    }
-                    comboItem.hidePopup(); // optionally close dropdown
-                    e.consume(); // prevent duplicate event
-                }
-            }
-        });*/
-
-     /*   editor.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && comboItem.isPopupVisible()) {
-                    Object selected = comboItem.getSelectedItem();
-                    if (selected != null) {
-                        editor.setText(selected.toString());
-                        comboItem.setSelectedItem(selected);
-                    }
-                    comboItem.hidePopup(); // close dropdown
-                    e.consume();
-                }
-            }
-        });
-*/
-
-
-//        lblItem = new JLabel("Food Name");
-//        lblItem.setBounds(40,60,100,30);
-//        lblItem.setFont(font);
-//        center.add(lblItem);
-
         sizeType = new JLabel("Size");
         sizeType.setBounds(40,100,100,30);
         sizeType.setFont(font);
@@ -267,9 +220,13 @@ public class GenerateBill extends JFrame {
         center.add(lblVAT);
 
         finalAmount = new JLabel("Amount");
-        finalAmount.setBounds(40,500,200,30);
+        finalAmount.setBounds(170,500,200,30);
         finalAmount.setFont(font);
         center.add(finalAmount);
+
+        JLabel lblNote = new JLabel("Note");
+        lblNote.setBounds(43,510,200,30);
+        center.add(lblNote);
 
 
         txtTotalAmt = new JTextField();
@@ -346,6 +303,12 @@ public class GenerateBill extends JFrame {
         txtAmt.setHorizontalAlignment(JTextField.CENTER);
         txtAmt.setEditable(false);
         center.add(txtAmt);
+
+
+        note = new JTextField();
+        note.setBounds(40,540,323,30);
+        note.setFont(font);
+        center.add(note);
 
         mainFrame.add(left);
         mainFrame.add(center);
@@ -598,6 +561,44 @@ public class GenerateBill extends JFrame {
                 format3 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format3).append(line).append(format3).append("\n");
 
+
+                    // Max width of receipt line
+                    int maxLineLength = 42;
+
+                    String noteText = note.getText();
+                    String[] words = noteText.split("\\s+");
+
+                    StringBuilder wrappedNote = new StringBuilder();
+                    StringBuilder lineBuilder = new StringBuilder();
+
+                    wrappedNote.append("Note : "); // first line prefix
+                    int currentLength = "Note : ".length();
+
+                    for (String word : words) {
+                        // If adding this word exceeds max length, wrap to next line
+                        if (currentLength + word.length() + 1 > maxLineLength) {
+                            wrappedNote.append("\n");
+                            wrappedNote.append("       "); // indent spaces for alignment with "Note : "
+                            lineBuilder.setLength(0);
+                            lineBuilder.append(word).append(" ");
+                            wrappedNote.append(lineBuilder);
+                            currentLength = 7 + word.length() + 1; // 7 = spaces
+                        } else {
+                            wrappedNote.append(word).append(" ");
+                            currentLength += word.length() + 1;
+                        }
+                    }
+
+                    fullText.append(wrappedNote).append("\n\n");
+
+
+//                line = "Note : " + note.getText();
+//                String format10 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
+//                fullText.append(format10).append(line).append(format6).append("\n\n");
+
+
+
+
                 line = "Powered By: www.facebook.com/easybilling";
                 String format7 = String.format("%-" + (42 - line.length()) / 2 + "s", text);
                 fullText.append(format7).append(line).append(format7).append("\n");
@@ -611,11 +612,11 @@ public class GenerateBill extends JFrame {
                 fullText.append(format9).append(line).append(format9).append("\n\n");
 
 
-//                System.out.println(fullText);
-                PrinterService printerService = new PrinterService();
-                printerService.printString("SEWOO SLK-TS100", fullText.toString());
-                byte[] cutP = new byte[]{0x1d, 'V', 1};
-                printerService.printBytes("SEWOO SLK-TS100", cutP);
+                System.out.println(fullText);
+//                PrinterService printerService = new PrinterService();
+//                printerService.printString("SEWOO SLK-TS100", fullText.toString());
+//                byte[] cutP = new byte[]{0x1d, 'V', 1};
+//                printerService.printBytes("SEWOO SLK-TS100", cutP);
 
                 if (invoiceNo != null) {
                     JOptionPane.showMessageDialog(null, "Transaction saved & printed!");

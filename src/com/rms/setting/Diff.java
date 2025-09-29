@@ -42,7 +42,7 @@ public class Diff {
 
     public static void main(String[] args) {
        try{
-           String encryptedText = "0";
+           String encryptedText = "10000000";
            System.out.println(encrypt(encryptedText));
        }
        catch(Exception e){
