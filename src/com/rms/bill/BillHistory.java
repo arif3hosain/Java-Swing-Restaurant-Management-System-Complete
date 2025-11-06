@@ -5,6 +5,7 @@ import com.rms.service.AppService;
 import com.rms.service.ReportService;
 import com.rms.setting.Utils;
 import db.DBConnection;
+import dto.Role;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 
@@ -80,8 +81,10 @@ public class BillHistory extends JFrame{
         top.add(toDate);
         btnSearch.setBounds(590,50,80,35);
         top.add(btnSearch);
-        btnVoidInvoice.setBounds(680,50,100,35);
-        top.add(btnVoidInvoice);
+        if(Utils.authority.role.equals(Role.ADMIN)) {
+            btnVoidInvoice.setBounds(680,50,100,35);
+            top.add(btnVoidInvoice);
+        }
         btnAdvanceReport.setBounds(790,50,120,35);
         top.add(btnAdvanceReport);
         btnExport.setBounds(950,50,120,35);

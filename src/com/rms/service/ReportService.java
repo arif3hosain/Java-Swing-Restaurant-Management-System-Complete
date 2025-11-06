@@ -29,8 +29,6 @@ public class ReportService {
     PreparedStatement pst;
     DBConnection con = new DBConnection();
 
-
-
     public void exportByItem(List<Map<String, Object>> data){
         try {
             String[] fields = new String[]{"serial","itemName","quantity", "amount", "unitPrice", "size"};
