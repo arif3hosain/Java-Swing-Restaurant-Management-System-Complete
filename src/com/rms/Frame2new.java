@@ -140,6 +140,7 @@ public class Frame2new {
           controlPanel.add(setting);
           controlPanel.add(reports);
       } if(Utils.authority.role.equals(Role.USER)) {
+           controlPanel.add(btnItem);
            controlPanel.add(btnBill);
            controlPanel.add(billHistory);
            controlPanel.add(reports);

@@ -24,7 +24,7 @@ public class ItemView {
    static JTable table = null;
     JPanel top = new JPanel(null);
     JPanel bottom = new JPanel(null);
-   Font font = new Font("SansSerif", Font.BOLD, 15);
+    Font font = new Font("SansSerif", Font.BOLD, 15);
     static String[] columnNames = {"ID","SL","Category Name","Item Name","Description",
             "Size","Price","Discount(%)","VAT(%)","Available"
     };
@@ -196,8 +196,6 @@ public class ItemView {
        }catch(Exception ex){
            ex.printStackTrace();
            JOptionPane.showMessageDialog(null, "Unable to delete!");
-       }finally{
-
        }
    }
 
