@@ -174,7 +174,7 @@ public class Frame2new {
            Utils.billingId = Integer.parseInt(Diff.decrypt(from_id));
 //           System.out.println(days +"::: "+fromID);
         }catch(Exception e){
-            //e.printStackTrace();
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Data changes has been found!");
         }
     }

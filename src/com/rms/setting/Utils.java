@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
-    public static String LOGO_PATH = "/home/ahosain/Documents/personal/RMS/logo.png";
+    public static String LOGO_PATH = "/home/ahosain/Documents/personal/RMS/src/logo.png";
     public static String LOGO_NOT_FOUND = "Logo doesn't found.";
     public static String TITLE = "BANGLA BHOJ & PARTY CENTER";
     public static String ICON_PATH = "";

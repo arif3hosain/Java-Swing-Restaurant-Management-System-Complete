@@ -68,7 +68,7 @@ public class Frame1 {
 				}
 			}
 		} catch (Exception ex) {
-			// Show company name if logo not found
+			ex.printStackTrace();
 			logoLabel.setText("<html><div style='text-align: center;'><font color='white' size='6'><b>COMPANY<br>LOGO</b></font></div></html>");
 		}
 
@@ -134,7 +134,7 @@ public class Frame1 {
 		rightPanel.add(submit);
 
 		devInfo = new JLabel();
-		devInfo.setText("© All Rights Reserved, Developed by Arif Hosain");
+		devInfo.setText("© All Rights Reserved, Developed by www.nanosolutionlab.com");
 		devInfo.setBounds(50, 420, 450, 30);
 		devInfo.setFont(new Font("Geomanist", Font.PLAIN, 12));
 		devInfo.setForeground(Color.white);

@@ -579,6 +579,8 @@ public class GenerateBill extends JFrame {
                         // If adding this word exceeds max length, wrap to next line
                         if (currentLength + word.length() + 1 > maxLineLength) {
                             wrappedNote.append("\n");
+
+
                             wrappedNote.append("       "); // indent spaces for alignment with "Note : "
                             lineBuilder.setLength(0);
                             lineBuilder.append(word).append(" ");
